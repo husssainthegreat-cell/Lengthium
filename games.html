@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lenghium Games | Free Online Games</title>
+    <style>
+        :root {
+            --bg-color: #242424;
+            --nav-color: #1a1a1a;
+            --accent-color: #ff4757;
+            --text-color: #ffffff;
+            --card-bg: #333;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 0;
+        }
+
+        nav {
+            background-color: var(--nav-color);
+            padding: 1rem 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--accent-color);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .search-bar {
+            flex-grow: 0.5;
+            padding: 0.5rem;
+            border-radius: 20px;
+            border: none;
+            outline: none;
+            background: #444;
+            color: white;
+            padding-left: 15px;
+        }
+
+        .hero {
+            padding: 2rem;
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 1.5rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .featured-big {
+            background: linear-gradient(45deg, #ff4757, #ff6b81);
+            height: 350px;
+            border-radius: 15px;
+            display: flex;
+            align-items: flex-end;
+            padding: 20px;
+            cursor: pointer;
+            transition: transform 0.3s;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .featured-big:hover {
+            transform: scale(1.02);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .game-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 15px;
+        }
+
+        .game-card {
+            background-color: var(--card-bg);
+            aspect-ratio: 1 / 1;
+            border-radius: 12px;
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .game-card:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+        }
+
+        .game-card img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .game-title {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            background: rgba(0,0,0,0.7);
+            padding: 5px;
+            font-size: 0.8rem;
+            text-align: center;
+        }
+
+        @media (max-width: 768px) {
+            .hero { grid-template-columns: 1fr; }
+            .search-bar { display: none; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <div class="logo">Lenghium</div>
+        <input type="text" class="search-bar" placeholder="Search for games...">
+        <div class="nav-links">Login</div>
+    </nav>
+
+    <section class="hero">
+        <div class="featured-big">
+            <img src="di.png" alt="Featured" style="width:100%; height:100%; object-fit:cover; position:absolute; top:0; left:0;">
+            <h2 style="position:relative; z-index:2;">Featured Game: Velocity X</h2>
+        </div>
+
+        <div class="game-card" style="height: 350px;">
+            <img src="di.png" alt="Trending">
+            <div class="game-title">Trending Now</div>
+        </div>
+    </section>
+
+    <div class="container">
+        <h3>Popular Games</h3>
+        <div class="game-grid">
+
+            <a href="g.html">
+                <div class="game-card">
+                    <img src="dimple.png" alt="Dimple Car">
+                    <div class="game-title">Dimple Car</div>
+                </div>
+            </a>
+
+            <div class="game-card">
+                <img src="di.png">
+                <div class="game-title">Temple Run</div>
+            </div>
+
+            <div class="game-card">
+                <img src="di.png">
+                <div class="game-title">Moto X3M</div>
+            </div>
+
+            <div class="game-card">
+                <img src="di.png">
+                <div class="game-title">Stickman Hook</div>
+            </div>
+
+            <div class="game-card">
+                <img src="di.png">
+                <div class="game-title">Brain Test</div>
+            </div>
+
+            <div class="game-card">
+                <img src="di.png">
+                <div class="game-title">Vectaria.io</div>
+            </div>
+
+            <div class="game-card">
+                <img src="di.png">
+                <div class="game-title">Monkey Mart</div>
+            </div>
+
+            <div class="game-card">
+                <img src="di.png">
+                <div class="game-title">Drive Mad</div>
+            </div>
+
+            <div class="game-card">
+                <img src="di.png">
+                <div class="game-title">Retro Bowl</div>
+            </div>
+
+            <div class="game-card">
+                <img src="di.png">
+                <div class="game-title">Narrow.one</div>
+            </div>
+
+            <div class="game-card">
+                <img src="di.png">
+                <div class="game-title">Crossy Road</div>
+            </div>
+
+            <div class="game-card">
+                <img src="di.png">
+                <div class="game-title">Jetpack Joyride</div>
+            </div>
+
+        </div>
+    </div>
+
+</body>
+</html>
