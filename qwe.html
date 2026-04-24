@@ -1,0 +1,517 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+<title>Water Sort Puzzle</title>
+<style>
+  :root{
+    --bg1:#0f172a; --bg2:#1e293b; --bg3:#312e81;
+    --glass: rgba(255,255,255,0.08);
+    --glass-border: rgba(255,255,255,0.25);
+    --text:#f8fafc; --muted:#cbd5e1;
+    --accent:#38bdf8; --accent2:#a78bfa;
+    --danger:#ef4444; --ok:#22c55e;
+    --tube-w: 64px; --tube-h: 240px; --seg-h: 56px; --tube-radius: 22px;
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color: transparent;}
+  html,body{margin:0;padding:0;height:100%;}
+  body{
+    font-family: system-ui,-apple-system,"Segoe UI",Roboto,Inter,sans-serif;
+    color:var(--text);
+    background: radial-gradient(1200px 800px at 20% 0%, #4338ca33, transparent 60%),
+                radial-gradient(1000px 700px at 100% 100%, #06b6d433, transparent 60%),
+                linear-gradient(135deg,var(--bg1),var(--bg2) 50%,var(--bg3));
+    min-height:100%;
+    overflow-x:hidden;
+    user-select:none;
+  }
+  header{
+    display:flex; align-items:center; justify-content:space-between;
+    padding: 14px 18px; gap:10px; flex-wrap:wrap;
+    backdrop-filter: blur(8px);
+    background: rgba(15,23,42,0.35);
+    border-bottom:1px solid rgba(255,255,255,0.08);
+    position:sticky; top:0; z-index:20;
+  }
+  .title{font-weight:700; font-size:18px; letter-spacing:.4px;}
+  .title span{color:var(--accent);}
+  .stats{display:flex; gap:14px; font-size:13px; color:var(--muted); flex-wrap:wrap;}
+  .stats b{color:var(--text); font-weight:600;}
+  .btn{
+    appearance:none; border:1px solid var(--glass-border);
+    background:var(--glass); color:var(--text);
+    padding:8px 14px; border-radius:12px; font-size:13px; font-weight:600;
+    cursor:pointer; transition: transform .15s ease, background .2s ease, box-shadow .2s ease;
+    backdrop-filter: blur(6px);
+  }
+  .btn:hover{background:rgba(255,255,255,0.16); transform:translateY(-1px);}
+  .btn:active{transform:translateY(0);}
+  .btn.primary{background:linear-gradient(135deg,var(--accent),var(--accent2)); border-color:transparent; color:#0b1020;}
+  .btn.ghost{background:transparent;}
+  .btn.icon{padding:8px 10px; min-width:38px;}
+  .btn[disabled]{opacity:.45; cursor:not-allowed; transform:none;}
+  .toolbar{display:flex; gap:8px; flex-wrap:wrap;}
+
+  main{
+    display:flex; flex-direction:column; align-items:center;
+    padding: 24px 14px 120px; gap:24px;
+  }
+  .stars{display:inline-flex; gap:3px; vertical-align:middle;}
+  .star{width:16px;height:16px;display:inline-block;background:#facc15;clip-path:polygon(50% 0,61% 35%,98% 35%,68% 57%,79% 91%,50% 70%,21% 91%,32% 57%,2% 35%,39% 35%);}
+  .star.dim{background:#475569;}
+
+  .board{
+    display:flex; flex-wrap:wrap; justify-content:center; gap:18px 22px;
+    max-width: min(1100px, 100%);
+    perspective: 1200px;
+  }
+  .tube{
+    position:relative;
+    width: var(--tube-w);
+    height: var(--tube-h);
+    border: 2px solid rgba(255,255,255,0.45);
+    border-top: 0;
+    border-radius: 0 0 var(--tube-radius) var(--tube-radius);
+    background: linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.02));
+    box-shadow:
+      inset 0 0 18px rgba(255,255,255,0.10),
+      inset 0 -10px 30px rgba(0,0,0,0.25),
+      0 10px 25px rgba(0,0,0,0.35);
+    overflow:hidden;
+    cursor:pointer;
+    transition: transform .35s cubic-bezier(.6,-0.2,.4,1.4), box-shadow .2s, margin .35s;
+    transform-origin: bottom center;
+  }
+  .tube::before{
+    content:""; position:absolute; left:-2px; right:-2px; top:-6px; height:10px;
+    border-radius: 50%/100%;
+    border:2px solid rgba(255,255,255,0.55);
+    background: linear-gradient(180deg, rgba(255,255,255,0.25), rgba(255,255,255,0.05));
+    box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+    pointer-events:none;
+  }
+  .tube::after{
+    content:""; position:absolute; top:8px; bottom:14px; left:8px; width:8px;
+    border-radius: 6px;
+    background: linear-gradient(180deg, rgba(255,255,255,0.55), rgba(255,255,255,0.05));
+    filter: blur(.5px);
+    opacity:.7;
+    pointer-events:none;
+  }
+  .tube.selected{
+    transform: translateY(-14px);
+    box-shadow:
+      inset 0 0 18px rgba(255,255,255,0.18),
+      0 16px 35px rgba(56,189,248,0.45),
+      0 0 0 2px rgba(56,189,248,0.6);
+  }
+  .tube.shake{animation: shake .35s;}
+  .tube.pour-tilt{animation: tilt .55s ease-in-out;}
+  .tube.win-glow{animation: winglow 1.2s ease-in-out infinite;}
+
+  @keyframes shake{
+    0%,100%{transform:translateX(0);}
+    20%{transform:translateX(-6px) rotate(-2deg);}
+    40%{transform:translateX(6px) rotate(2deg);}
+    60%{transform:translateX(-4px) rotate(-1deg);}
+    80%{transform:translateX(4px) rotate(1deg);}
+  }
+  @keyframes tilt{
+    0%{transform: translateY(-14px) rotate(0);}
+    50%{transform: translateY(-30px) rotate(-22deg);}
+    100%{transform: translateY(-14px) rotate(0);}
+  }
+  @keyframes winglow{
+    0%,100%{box-shadow: inset 0 0 18px rgba(255,255,255,.2), 0 0 25px #22c55e88, 0 0 0 2px #22c55e88;}
+    50%{box-shadow: inset 0 0 18px rgba(255,255,255,.3), 0 0 45px #22c55ecc, 0 0 0 3px #22c55ecc;}
+  }
+
+  .liquid-wrap{position:absolute; left:0; right:0; bottom:0; display:flex; flex-direction:column-reverse;}
+  .seg{
+    height: var(--seg-h);
+    width:100%;
+    position:relative;
+    transition: height .35s ease, opacity .25s ease, transform .35s ease;
+    box-shadow: inset 0 6px 10px rgba(255,255,255,0.18), inset 0 -6px 10px rgba(0,0,0,0.25);
+  }
+  .seg.top::before{
+    content:""; position:absolute; left:0; right:0; top:-6px; height:10px;
+    background: inherit;
+    border-radius: 50%/100%;
+    filter: brightness(1.1);
+    animation: wave 3.5s ease-in-out infinite;
+  }
+  @keyframes wave{
+    0%,100%{transform: translateY(0) scaleY(1);}
+    50%{transform: translateY(-2px) scaleY(1.15);}
+  }
+
+  .stream{
+    position:fixed; pointer-events:none; z-index:30;
+    width:10px; border-radius: 6px;
+    box-shadow: 0 0 10px rgba(255,255,255,0.4);
+    transform-origin: top center;
+  }
+
+  .modal-bg{
+    position:fixed; inset:0; background: rgba(2,6,23,0.65);
+    display:none; align-items:center; justify-content:center;
+    z-index:50; backdrop-filter: blur(6px);
+  }
+  .modal-bg.show{display:flex;}
+  .modal{
+    background: linear-gradient(160deg, #0b1224, #1e1b4b);
+    border:1px solid rgba(255,255,255,0.12);
+    border-radius:20px; padding:24px; max-width: 520px; width: calc(100% - 32px);
+    box-shadow: 0 25px 60px rgba(0,0,0,0.55);
+    animation: pop .3s ease-out;
+  }
+  @keyframes pop{from{transform:scale(.9); opacity:0;} to{transform:scale(1); opacity:1;}}
+  .modal h2{margin:0 0 8px; font-size:22px;}
+  .modal p{color:var(--muted); margin: 6px 0 16px;}
+  .levels{display:grid; grid-template-columns: repeat(auto-fill, minmax(70px, 1fr)); gap:10px; max-height: 50vh; overflow:auto; padding: 4px;}
+  .lvl-btn{
+    aspect-ratio:1; border-radius:14px; border:1px solid var(--glass-border);
+    background:var(--glass); color:var(--text); font-weight:700; font-size:16px;
+    display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px;
+    cursor:pointer; transition: transform .15s, background .2s;
+  }
+  .lvl-btn:hover:not([disabled]){background:rgba(255,255,255,0.18); transform:translateY(-2px);}
+  .lvl-btn[disabled]{opacity:.45; cursor:not-allowed;}
+  .lvl-btn .ministars{display:flex; gap:2px;}
+  .lvl-btn .ministars .star{width:8px;height:8px;}
+
+  .confetti{
+    position:fixed; top:-10px; width:8px; height:14px;
+    border-radius:2px; z-index:60; pointer-events:none;
+    animation: fall linear forwards;
+  }
+  @keyframes fall{
+    to { transform: translateY(110vh) rotate(720deg); opacity:.9;}
+  }
+
+  .toast{
+    position:fixed; left:50%; top:80px; transform: translateX(-50%);
+    background: rgba(2,6,23,0.85); color:#fff; padding: 10px 16px;
+    border-radius:999px; font-size:13px; border:1px solid rgba(255,255,255,0.15);
+    z-index: 70; opacity:0; pointer-events:none; transition: opacity .25s, transform .25s;
+  }
+  .toast.show{opacity:1; transform: translateX(-50%) translateY(0);}
+
+  @media (max-width: 640px){
+    :root{--tube-w: 52px; --tube-h: 200px; --seg-h: 46px; --tube-radius: 18px;}
+    .board{gap:14px 16px;}
+    header{padding:10px 12px;}
+    .title{font-size:15px;}
+    .btn{padding:7px 10px; font-size:12px;}
+  }
+</style>
+</head>
+<body>
+
+<audio id="bgMusic" src="hh.mp3" loop></audio>
+
+<header>
+  <div class="title">💧 Water <span>Sort</span> Puzzle</div>
+  <div class="stats">
+    <div>Level: <b id="lvlIndicator">1</b></div>
+    <div>Moves: <b id="movesIndicator">0</b></div>
+    <div>Time: <b id="timeIndicator">0:00</b></div>
+    <div>Score: <b id="scoreIndicator">0</b></div>
+    <div class="stars" id="starsLive"></div>
+  </div>
+  <div class="toolbar">
+    <button class="btn icon" id="musicBtn" title="Background Music">🎵</button>
+    <button class="btn icon" id="muteBtn" title="Sound Effects">🔊</button>
+    <button class="btn" id="hintBtn">💡 Hint</button>
+    <button class="btn" id="undoBtn">↶ Undo</button>
+    <button class="btn" id="restartBtn">↻ Restart</button>
+    <button class="btn" id="solveBtn">🤖 Solve</button>
+    <button class="btn" id="levelsBtn">☰ Levels</button>
+    <button class="btn primary" id="nextBtn" disabled>Next →</button>
+  </div>
+</header>
+
+<main>
+  <div class="board" id="board"></div>
+</main>
+
+<div class="modal-bg" id="levelsModal">
+  <div class="modal">
+    <h2>Select Level</h2>
+    <p>Unlock new levels by completing previous ones.</p>
+    <div class="levels" id="levelsGrid"></div>
+    <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:16px;">
+      <button class="btn ghost" id="closeLevels">Close</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-bg" id="winModal">
+  <div class="modal" style="text-align:center;">
+    <h2>🎉 Level Complete!</h2>
+    <div class="stars" id="winStars" style="justify-content:center; margin: 8px 0 4px;"></div>
+    <p id="winSummary">Great job!</p>
+    <div style="display:flex; gap:10px; justify-content:center; flex-wrap:wrap;">
+      <button class="btn" id="winReplay">Replay</button>
+      <button class="btn" id="winLevels">Levels</button>
+      <button class="btn primary" id="winNext">Next →</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ============================================================
+   GAME LOGIC & UPDATED AUDIO
+============================================================ */
+
+const TUBE_HEIGHT = 4;
+const PALETTE = ['#ef4444','#f97316','#eab308','#22c55e','#06b6d4','#3b82f6','#8b5cf6','#ec4899','#14b8a6','#f43f5e','#84cc16','#a855f7'];
+
+const state = {
+  level: 1,
+  tubes: [],
+  history: [],
+  selected: null,
+  moves: 0,
+  startTime: 0,
+  timerId: null,
+  muted: false,      // SFX Mute
+  musicMuted: false, // Music Mute
+  busy: false,
+};
+
+const musicEl = document.getElementById('bgMusic');
+const musicBtn = document.getElementById('musicBtn');
+
+/* ---------- AUDIO SYSTEM ---------- */
+function toggleMusic() {
+  state.musicMuted = !state.musicMuted;
+  if (state.musicMuted) {
+    musicEl.pause();
+    musicBtn.textContent = '🔇';
+  } else {
+    musicEl.play().catch(() => {}); // Catch block for browser block policies
+    musicBtn.textContent = '🎵';
+  }
+  saveSettings();
+}
+
+function ensureAudioStarted() {
+  // Browsers block autoplay. This triggers on the first click.
+  if (!state.musicMuted && musicEl.paused) {
+    musicEl.play().catch(() => {});
+  }
+}
+
+let audioCtx = null;
+function ensureAudio(){
+  if(!audioCtx){
+    try { audioCtx = new (window.AudioContext || window.webkitAudioContext)(); } catch(e){}
+  }
+}
+function beep(freq=440, dur=0.12, type='sine', vol=0.15){
+  if(state.muted) return;
+  ensureAudio();
+  if(!audioCtx) return;
+  const t = audioCtx.currentTime;
+  const o = audioCtx.createOscillator();
+  const g = audioCtx.createGain();
+  o.type = type; o.frequency.setValueAtTime(freq, t);
+  g.gain.setValueAtTime(0, t);
+  g.gain.linearRampToValueAtTime(vol, t+0.01);
+  g.gain.exponentialRampToValueAtTime(0.0001, t+dur);
+  o.connect(g).connect(audioCtx.destination);
+  o.start(t); o.stop(t+dur+0.02);
+}
+function sndPour(){ beep(280,0.18,'triangle',0.18); }
+function sndError(){ beep(180,0.2,'square',0.18); }
+function sndWin(){
+  const notes=[523,659,784,1046];
+  notes.forEach((n,i)=> setTimeout(()=>beep(n,0.22,'triangle',0.2), i*120));
+}
+function sndSelect(){ beep(660,0.06,'sine',0.08); }
+
+/* ---------- LEVEL GENERATION ---------- */
+const LEVELS = Array.from({length: 12}, (_, i) => ({colors: 3 + i, extraEmpty: 2}));
+const TOTAL_LEVELS = LEVELS.length;
+
+function mulberry32(seed){
+  return function(){
+    let t = seed += 0x6D2B79F5;
+    t = Math.imul(t ^ (t >>> 15), t | 1);
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  }
+}
+
+function generateLevel(idx){
+  const cfg = LEVELS[idx-1] || LEVELS[0];
+  const rng = mulberry32(1000 + idx*37);
+  const colors = PALETTE.slice(0, cfg.colors);
+  const pool = [];
+  colors.forEach(c => { for(let i=0;i<TUBE_HEIGHT;i++) pool.push(c); });
+  for(let i=pool.length-1;i>0;i--){
+    const j = Math.floor(rng()*(i+1));
+    [pool[i],pool[j]] = [pool[j],pool[i]];
+  }
+  const tubes = [];
+  for(let i=0;i<cfg.colors;i++) tubes.push(pool.slice(i*TUBE_HEIGHT, (i+1)*TUBE_HEIGHT));
+  for(let i=0;i<cfg.extraEmpty;i++) tubes.push([]);
+  return tubes;
+}
+
+/* ---------- UI & LOGIC ---------- */
+const boardEl = document.getElementById('board');
+const lvlIndicator = document.getElementById('lvlIndicator');
+const movesIndicator = document.getElementById('movesIndicator');
+const timeIndicator = document.getElementById('timeIndicator');
+const scoreIndicator = document.getElementById('scoreIndicator');
+const starsLive = document.getElementById('starsLive');
+
+function render(){
+  boardEl.innerHTML = '';
+  state.tubes.forEach((tube, i) => {
+    const tEl = document.createElement('div');
+    tEl.className = 'tube' + (state.selected === i ? ' selected' : '') + (isComplete(tube) ? ' win-glow' : '');
+    tEl.dataset.idx = i;
+    const wrap = document.createElement('div');
+    wrap.className = 'liquid-wrap';
+    tube.forEach((color, idx) => {
+      const s = document.createElement('div');
+      s.className = 'seg' + (idx === tube.length-1 ? ' top' : '');
+      s.style.background = `linear-gradient(180deg, ${shade(color,18)}, ${color} 40%, ${shade(color,-18)})`;
+      wrap.appendChild(s);
+    });
+    tEl.appendChild(wrap);
+    boardEl.appendChild(tEl);
+  });
+  movesIndicator.textContent = state.moves;
+  scoreIndicator.textContent = computeScore();
+  renderStars(starsLive, computeStars());
+  lvlIndicator.textContent = state.level;
+  document.getElementById('undoBtn').disabled = state.history.length === 0;
+  document.getElementById('nextBtn').disabled = !checkWin(state.tubes);
+}
+
+function shade(hex, percent){
+  const n = parseInt(hex.slice(1),16);
+  let r=(n>>16)&255, g=(n>>8)&255, b=n&255;
+  r = Math.max(0, Math.min(255, r + Math.round(255*percent/100)));
+  g = Math.max(0, Math.min(255, g + Math.round(255*percent/100)));
+  b = Math.max(0, Math.min(255, b + Math.round(255*percent/100)));
+  return '#' + ((1<<24)|(r<<16)|(g<<8)|b).toString(16).slice(1);
+}
+
+function renderStars(container, count){
+  container.innerHTML = '';
+  for(let i=0;i<3;i++) {
+    const s = document.createElement('span');
+    s.className = 'star' + (i<count?'':' dim');
+    container.appendChild(s);
+  }
+}
+
+function handleTubeClick(idx){
+  ensureAudioStarted(); // Trigger music on first game interaction
+  if(state.selected === null){
+    if(state.tubes[idx].length === 0) return;
+    state.selected = idx; sndSelect(); render();
+  } else if(state.selected === idx){
+    state.selected = null; render();
+  } else {
+    if(canPour(state.tubes, state.selected, idx)) doPour(state.selected, idx);
+    else { sndError(); state.selected = idx; render(); }
+  }
+}
+
+function canPour(tubes, from, to){
+  const f = tubes[from], t = tubes[to];
+  if(!f.length || t.length >= TUBE_HEIGHT) return false;
+  if(t.length > 0 && f[f.length-1] !== t[t.length-1]) return false;
+  return true;
+}
+
+function doPour(fIdx, tIdx){
+  state.busy = true;
+  state.history.push(state.tubes.map(t=>t.slice()));
+  const f = state.tubes[fIdx], t = state.tubes[tIdx];
+  const color = f[f.length-1];
+  while(f.length && (t.length < TUBE_HEIGHT) && f[f.length-1] === color){
+    t.push(f.pop());
+  }
+  state.moves++; state.selected = null; state.busy = false; sndPour(); render();
+  if(checkWin(state.tubes)) onWin();
+  saveProgress();
+}
+
+function isComplete(tube){ return tube.length === TUBE_HEIGHT && tube.every(c=>c===tube[0]); }
+function checkWin(tubes){ return tubes.every(t => t.length===0 || isComplete(t)); }
+function onWin(){ sndWin(); confetti(); document.getElementById('winModal').classList.add('show'); }
+function computeScore(){ return Math.max(0, 1000 - (state.moves*5)); }
+function computeStars(){ return state.moves < 25 ? 3 : (state.moves < 40 ? 2 : 1); }
+
+function confetti(){
+  for(let i=0;i<50;i++){
+    const c = document.createElement('div');
+    c.className='confetti'; c.style.left = Math.random()*100 + 'vw';
+    c.style.background = PALETTE[Math.floor(Math.random()*PALETTE.length)];
+    c.style.animationDuration = (1+Math.random()*2)+'s';
+    document.body.appendChild(c);
+    setTimeout(()=>c.remove(), 3000);
+  }
+}
+
+/* ---------- EVENTS ---------- */
+boardEl.addEventListener('click', e => {
+  const t = e.target.closest('.tube');
+  if(t && !state.busy) handleTubeClick(+t.dataset.idx);
+});
+
+musicBtn.addEventListener('click', toggleMusic);
+document.getElementById('muteBtn').addEventListener('click', e => {
+  state.muted = !state.muted;
+  e.target.textContent = state.muted ? '🔇' : '🔊';
+  saveSettings();
+});
+
+document.getElementById('restartBtn').addEventListener('click', () => loadLevel(state.level));
+document.getElementById('levelsBtn').addEventListener('click', openLevels);
+document.getElementById('closeLevels').addEventListener('click', () => document.getElementById('levelsModal').classList.remove('show'));
+
+/* ---------- PERSISTENCE & INIT ---------- */
+const SAVE_KEY = 'watersort_v2';
+function saveSettings(){ localStorage.setItem(SAVE_KEY, JSON.stringify(state)); }
+function saveProgress(){ saveSettings(); }
+function loadLevel(n){
+  state.level = n; state.tubes = generateLevel(n); state.history = []; state.moves = 0; state.selected = null;
+  render();
+}
+function openLevels(){
+  const grid = document.getElementById('levelsGrid'); grid.innerHTML = '';
+  for(let i=1; i<=TOTAL_LEVELS; i++){
+    const b = document.createElement('button'); b.className = 'lvl-btn'; b.textContent = i;
+    b.onclick = () => { loadLevel(i); document.getElementById('levelsModal').classList.remove('show'); };
+    grid.appendChild(b);
+  }
+  document.getElementById('levelsModal').classList.add('show');
+}
+
+(function init(){
+  const saved = JSON.parse(localStorage.getItem(SAVE_KEY) || '{}');
+  state.level = saved.level || 1;
+  state.muted = !!saved.muted;
+  state.musicMuted = !!saved.musicMuted;
+  
+  // Set initial button states
+  document.getElementById('muteBtn').textContent = state.muted ? '🔇' : '🔊';
+  musicBtn.textContent = state.musicMuted ? '🔇' : '🎵';
+  
+  loadLevel(state.level);
+})();
+</script>
+</body>
+</html>
