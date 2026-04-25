@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LENGTHIUM | Creative Studio</title>
+    <style>
+        :root {
+            --primary: #818cf8; 
+            --bg: #0f172a;      
+            --card-bg: #1e293b; 
+            --text-main: #f8fafc;
+            --text-dim: #94a3b8;
+            --nav-bg: rgba(15, 23, 42, 0.9);
+        }
+
+        body {
+            font-family: 'Inter', 'Segoe UI', sans-serif;
+            background-color: var(--bg);
+            color: var(--text-main);
+            margin: 0;
+            padding-top: 100px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        /* --- Dark Navbar --- */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            height: 70px;
+            background: var(--nav-bg);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 5%;
+            box-sizing: border-box;
+            z-index: 1000;
+        }
+
+        .logo img {
+            height: 40px;
+        }
+
+        /* Centered Text "LENGTHIUM" */
+        .nav-center {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 1.5rem;
+            font-weight: 800;
+            letter-spacing: 4px;
+            color: #ffffff;
+            text-transform: uppercase;
+            text-shadow: 0 0 15px rgba(129, 140, 248, 0.5);
+        }
+
+        .nav-links {
+            list-style: none;
+            display: flex;
+            gap: 30px;
+            margin: 0;
+            padding: 0;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--text-dim);
+            font-weight: 500;
+            transition: 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary);
+        }
+
+        /* --- Header & Cards --- */
+        .header-title {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        .header-title h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            background: linear-gradient(to right, #fff, var(--primary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            width: 90%;
+            max-width: 1100px;
+        }
+
+        .tool-box {
+            background: var(--card-bg);
+            padding: 3rem 2rem;
+            border-radius: 24px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .tool-box:hover {
+            transform: translateY(-10px);
+            background: #242f42;
+            border-color: var(--primary);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+        }
+
+        .icon {
+            font-size: 4rem;
+            margin-bottom: 1.5rem;
+            display: block;
+        }
+
+    </style>
+</head>
+<body>
+
+    <nav>
+        <div class="logo">
+            <img src="logo123.png" alt="Logo">
+        </div>
+
+        <div class="nav-center">👾 ʟᴇɴᴛʜɪᴜᴍ 👾</div>
+
+        <ul class="nav-links">
+            <li><a href="#">Home</a></li>
+            <li><a href="#">About</a></li>
+            <li><a href="#">Contact</a></li>
+        </ul>
+    </nav>
+
+    <div class="header-title">
+        <h1>Whats Your Mood</h1>
+        <p>Explore the power of Lengthium in everything</p>
+    </div>
+
+    <div class="container">
+        <a href="gams.html" class="tool-box">
+            <span class="icon">💎</span>
+            <h3>Time Pass</h3>
+            <p>You can play games and read books and so on.</p>
+        </a>
+
+        <a href="h.html" class="tool-box">
+            <span class="icon">✨</span>
+            <h3>Picture Editor</h3>
+            <p>Apply cinematic filters and adjust lighting.</p>
+        </a>
+
+        <a href="h.html" class="tool-box">
+            <span class="icon">🎞️</span>
+            <h3>Batch Process</h3>
+            <p>Optimize and resize multiple images at once.</p>
+        </a>
+    </div>
+
+</body>
+</html>
