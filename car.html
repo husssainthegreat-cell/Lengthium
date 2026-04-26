@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>🔢 Random Number Guesser · Hint Master</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      user-select: none; /* slight polish, not breaking anything */
+    }
+
+    body {
+      background: linear-gradient(145deg, #10161f 0%, #1a2536 100%);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-family: 'Segoe UI', 'Poppins', 'Inter', system-ui, -apple-system, 'Roboto', sans-serif;
+      margin: 0;
+      padding: 20px;
+    }
+
+    /* main game card */
+    .game-container {
+      background: rgba(22, 34, 48, 0.85);
+      backdrop-filter: blur(2px);
+      border-radius: 64px;
+      box-shadow: 0 25px 45px rgba(0, 0, 0, 0.5), inset 0 1px 1px rgba(255, 255, 255, 0.1);
+      padding: 28px 24px 38px 24px;
+      width: 100%;
+      max-width: 580px;
+      transition: all 0.2s ease;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    h1 {
+      text-align: center;
+      margin: 0 0 6px 0;
+      font-size: 2.4rem;
+      letter-spacing: 1px;
+      background: linear-gradient(135deg, #ffe6b0, #ffb347);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      text-shadow: 0 2px 5px rgba(0,0,0,0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+    }
+
+    .sub {
+      text-align: center;
+      color: #b9d0f0;
+      font-weight: 500;
+      margin-top: -8px;
+      margin-bottom: 28px;
+      font-size: 0.9rem;
+      border-bottom: 1px dashed #2e4a6e;
+      display: inline-block;
+      width: auto;
+      padding-bottom: 6px;
+    }
+
+    .range-panel {
+      background: #0f1a24;
+      border-radius: 48px;
+      padding: 12px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 28px;
+      border: 1px solid #2c4c6e;
+      box-shadow: inset 0 1px 3px #00000030, 0 6px 12px -8px black;
+    }
+
+    .range-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: #07121c;
+      padding: 6px 18px;
+      border-radius: 60px;
+    }
+
+    .range-item label {
+      font-weight: 600;
+      color: #ffcd94;
+      font-size: 0.9rem;
+    }
+
+    .range-item input {
+      background: #eef4ff;
+      border: none;
+      width: 80px;
+      padding: 8px 10px;
+      border-radius: 36px;
+      font-weight: bold;
+      text-align: center;
+      font-size: 1rem;
+      font-family: monospace;
+      transition: 0.1s;
+    }
+
+    .range-item input:focus {
+      outline: none;
+      box-shadow: 0 0 0 2px #ffae42;
+      background: white;
+    }
+
+    button {
+      background: #2f5d80;
+      border: none;
+      font-weight: bold;
+      padding: 8px 18px;
+      border-radius: 40px;
+      color: white;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: 0.15s linear;
+      box-shadow: 0 3px 6px rgba(0, 0, 0, 0.3);
+      font-family: inherit;
+    }
+
+    button:active {
+      transform: scale(0.96);
+    }
+
+    button.reset-btn {
+      background: #3a2c2a;
+      border: 1px solid #c07a5b;
+      color: #ffd8b5;
+    }
+
+    button.primary {
+      background: #e68a2e;
+      box-shadow: 0 4px 0 #823d00;
+    }
+
+    .guess-area {
+      background: #07131e;
+      border-radius: 56px;
+      padding: 16px 24px;
+      margin: 20px 0;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: center;
+      gap: 14px;
+    }
+
+    .guess-input {
+      flex: 2;
+      min-width: 140px;
+    }
+
+    .guess-input input {
+      width: 100%;
+      padding: 16px 20px;
+      font-size: 1.4rem;
+      font-weight: bold;
+      text-align: center;
+      background: #fef7e0;
+      border: none;
+      border-radius: 60px;
+      font-family: 'Courier New', monospace;
+      letter-spacing: 2px;
+    }
+
+    .guess-area button {
+      padding: 12px 28px;
+      font-size: 1.2rem;
+    }
+
+    .hint-card {
+      background: #00000066;
+      border-radius: 48px;
+      padding: 18px 25px;
+      margin: 15px 0;
+      text-align: center;
+      border-left: 8px solid #ffaa44;
+      backdrop-filter: blur(4px);
+    }
+
+    .hint-text {
+      font-size: 1.55rem;
+      font-weight: bold;
+      letter-spacing: -0.3px;
+      color: #ffeaad;
+      word-break: break-word;
+    }
+
+    .message-area {
+      background: #0d1c2b;
+      border-radius: 40px;
+      padding: 14px 20px;
+      margin: 12px 0;
+      font-size: 1rem;
+      font-weight: 500;
+      color: #bcd0ff;
+      text-align: center;
+    }
+
+    .attempt-counter {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #00000033;
+      border-radius: 60px;
+      padding: 8px 20px;
+      margin-top: 10px;
+      font-family: monospace;
+      font-weight: bold;
+    }
+
+    .attempt-number {
+      background: #11161f;
+      padding: 5px 16px;
+      border-radius: 30px;
+      font-size: 1.5rem;
+      color: #ffbc6e;
+    }
+
+    footer {
+      text-align: center;
+      font-size: 0.7rem;
+      margin-top: 24px;
+      opacity: 0.7;
+    }
+
+    @media (max-width: 480px) {
+      .game-container { padding: 20px 16px; }
+      .hint-text { font-size: 1.2rem; }
+      .guess-input input { padding: 12px 12px; font-size: 1.2rem; }
+    }
+
+    button:disabled {
+      opacity: 0.6;
+      transform: none;
+      cursor: not-allowed;
+    }
+  </style>
+</head>
+<body>
+
+<div class="game-container" id="gameRoot">
+  <h1>
+    🎲 GUESSER
+    <span style="font-size: 1.8rem;">❓</span>
+  </h1>
+  <div style="text-align: center;">
+    <span class="sub">🔥 smart hints · beat the number</span>
+  </div>
+
+  <!-- Range customizer -->
+  <div class="range-panel">
+    <div class="range-item">
+      <label>🔽 MIN</label>
+      <input type="number" id="minRangeInput" value="1" step="1">
+    </div>
+    <div class="range-item">
+      <label>🔼 MAX</label>
+      <input type="number" id="maxRangeInput" value="100" step="1">
+    </div>
+    <button id="applyRangeBtn" style="background:#325b6e;">⚡ NEW GAME + RANGE</button>
+  </div>
+
+  <!-- Main guess zone -->
+  <div class="guess-area">
+    <div class="guess-input">
+      <input type="number" id="guessField" placeholder="Enter guess" autocomplete="off">
+    </div>
+    <button id="guessBtn" class="primary">🎯 GUESS</button>
+  </div>
+
+  <!-- Hint area - main feedback -->
+  <div class="hint-card">
+    <div style="font-size:0.8rem; text-transform:uppercase; letter-spacing:2px; color:#b9a77a;">💡 HINT</div>
+    <div class="hint-text" id="hintMessage">✨ make your first guess ✨</div>
+  </div>
+
+  <!-- additional status -->
+  <div class="message-area" id="statusMessage">
+    ✅ Game active — range 1 – 100
+  </div>
+
+  <!-- attempts & reset -->
+  <div class="attempt-counter">
+    <span>📋 attempts made</span>
+    <span class="attempt-number" id="attemptCount">0</span>
+    <button id="resetGameBtn" class="reset-btn">⟳ RESET GAME</button>
+  </div>
+  <footer>
+    🧠 Hints: "too high · too low · special warm/freezing" + remaining span
+  </footer>
+</div>
+
+<script>
+  (function() {
+    // ---------- DOM elements ----------
+    const minInput = document.getElementById('minRangeInput');
+    const maxInput = document.getElementById('maxRangeInput');
+    const applyRangeBtn = document.getElementById('applyRangeBtn');
+    const guessField = document.getElementById('guessField');
+    const guessBtn = document.getElementById('guessBtn');
+    const resetGameBtn = document.getElementById('resetGameBtn');
+    const hintMessageDiv = document.getElementById('hintMessage');
+    const statusMessageDiv = document.getElementById('statusMessage');
+    const attemptCountSpan = document.getElementById('attemptCount');
+
+    // ---------- Game state ----------
+    let secretNumber = null;        // current secret number
+    let minRange = 1;              // inclusive minimum
+    let maxRange = 100;            // inclusive maximum
+    let attempts = 0;
+    let gameOver = false;           // true when guessed correctly or game locked
+
+    // ---------- Helper functions ----------
+    function updateAttemptsUI() {
+      attemptCountSpan.textContent = attempts;
+    }
+
+    // generate fresh secret within current [minRange, maxRange] (inclusive)
+    function generateSecret() {
+      if (minRange > maxRange) {
+        // fallback: swap if needed, but we will validate before calling
+        const tempMin = minRange;
+        const tempMax = maxRange;
+        minRange = Math.min(tempMin, tempMax);
+        maxRange = Math.max(tempMin, tempMax);
+      }
+      // ensure integer range
+      minRange = Math.floor(minRange);
+      maxRange = Math.floor(maxRange);
+      if (minRange === maxRange) {
+        secretNumber = minRange;
+      } else {
+        secretNumber = Math.floor(Math.random() * (maxRange - minRange + 1)) + minRange;
+      }
+      // safety: secretNumber defined exactly inside inclusive bounds
+      console.log(`[DEV] new secret: ${secretNumber} (range ${minRange}–${maxRange})`);
+    }
+
+    // reset game state: generate new secret, reset attempts, gameOver false, clear input, update UI hints
+    function resetGame(keepRange = true) {
+      if (!keepRange) {
+        // ranges are already validated by caller (applyRange)
+      }
+      // Re-validate ranges: make sure min <= max, if not fix
+      if (minRange > maxRange) {
+        const oldMin = minRange;
+        minRange = maxRange;
+        maxRange = oldMin;
+        // update input fields to reflect swap
+        minInput.value = minRange;
+        maxInput.value = maxRange;
+      }
+      // clamp inputs to integer & avoid weirdness
+      minRange = Number(minInput.value);
+      maxRange = Number(maxInput.value);
+      if (isNaN(minRange)) minRange = 1;
+      if (isNaN(maxRange)) maxRange = 100;
+      if (minRange > maxRange) { let t = minRange; minRange = maxRange; maxRange = t; }
+      minInput.value = minRange;
+      maxInput.value = maxRange;
+
+      generateSecret();      // creates new secret based on current minRange/maxRange
+      attempts = 0;
+      gameOver = false;
+      updateAttemptsUI();
+      guessField.value = '';
+      guessField.disabled = false;
+      guessBtn.disabled = false;
+      // update status and hint with fresh info
+      statusMessageDiv.innerHTML = `✅ Game active — range ${minRange} – ${maxRange}`;
+      hintMessageDiv.innerHTML = `🎲 New round! Guess a number between ${minRange} and ${maxRange}`;
+      // additional style to remove error leftover
+      guessField.focus();
+    }
+
+    // apply new range from UI, reset everything with fresh secret
+    function applyNewRangeAndReset() {
+      // read raw values
+      let rawMin = parseInt(minInput.value, 10);
+      let rawMax = parseInt(maxInput.value, 10);
+      if (isNaN(rawMin)) rawMin = 1;
+      if (isNaN(rawMax)) rawMax = 100;
+      // ensure min <= max
+      if (rawMin > rawMax) {
+        // swap them silently for usability
+        [rawMin, rawMax] = [rawMax, rawMin];
+        minInput.value = rawMin;
+        maxInput.value = rawMax;
+      }
+      // additional boundary: avoid too large ranges but no hard limit, but we protect max range up to 1e6 performance fine
+      if (rawMax - rawMin > 500000) {
+        statusMessageDiv.innerHTML = `⚠️ Range too large (max diff 500k). Adjusting to safer diff.`;
+        rawMax = rawMin + 500000;
+        maxInput.value = rawMax;
+      }
+      minRange = rawMin;
+      maxRange = rawMax;
+      // reset full game
+      resetGame(true);
+      // extra update message to reflect new range
+      statusMessageDiv.innerHTML = `🎯 New range! ${minRange} – ${maxRange} · Secret regenerated.`;
+      hintMessageDiv.innerHTML = `✨ I picked a secret number (${minRange}–${maxRange}). Start guessing! ✨`;
+      guessField.value = '';
+      gameOver = false;
+    }
+
+    // generate contextual hint based on guess vs secret, plus special 'spicy' if very close
+    function generateRichHint(guess, secret, minR, maxR) {
+      const diff = Math.abs(guess - secret);
+      if (guess === secret) {
+        return "🎉🎉 CORRECT! You nailed it! 🎉🎉";
+      }
+      // direction
+      const direction = guess > secret ? "📈 Too HIGH" : "📉 Too LOW";
+      
+      // proximity extra flavor
+      let proximity = "";
+      if (diff === 1) proximity = " 🔥 BOILING HOT! You're literally next to it! 🔥";
+      else if (diff <= 3) proximity = " 🥵 VERY HOT! extremely close!";
+      else if (diff <= 6) proximity = " 🌶️ Hot! Getting warmer...";
+      else if (diff <= 12) proximity = " 👍 Warm, but not there yet.";
+      else if (diff <= 25) proximity = " ❄️ Cool, keep adjusting direction.";
+      else proximity = " 🧊 Freezing cold — far away!";
+
+      // add helpful range bracket info (optional but nice)
+      let bracketInfo = "";
+      if (guess > secret && guess <= maxR) bracketInfo = ` (Hint: try lower than ${guess})`;
+      else if (guess < secret && guess >= minR) bracketInfo = ` (Hint: try higher than ${guess})`;
+      
+      return `${direction}${proximity}${bracketInfo}`;
+    }
+
+    // core guess handling
+    function handleGuess() {
+      if (gameOver) {
+        statusMessageDiv.innerHTML = "🏆 Game already finished! Press 'RESET GAME' or 'NEW GAME + RANGE' to play again 🏆";
+        hintMessageDiv.innerHTML = "🎯 Game over. Reset to guess again!";
+        return;
+      }
+      
+      let rawGuess = guessField.value.trim();
+      if (rawGuess === "") {
+        statusMessageDiv.innerHTML = "⚠️ Please enter a number!";
+        hintMessageDiv.innerHTML = "❓ Enter a numeric guess...";
+        return;
+      }
+      const guess = Number(rawGuess);
+      if (isNaN(guess) || !Number.isInteger(guess)) {
+        statusMessageDiv.innerHTML = "❌ Invalid input! Only whole numbers allowed.";
+        hintMessageDiv.innerHTML = "🔢 Integers only please (e.g., 42)";
+        guessField.value = "";
+        guessField.focus();
+        return;
+      }
+      
+      // range validation (optional but friendly)
+      if (guess < minRange || guess > maxRange) {
+        statusMessageDiv.innerHTML = `🚫 Out of range! Guess between ${minRange} and ${maxRange}.`;
+        hintMessageDiv.innerHTML = `🎯 Stay within ${minRange}–${maxRange} — secret lies inside!`;
+        guessField.value = "";
+        guessField.focus();
+        return;
+      }
+      
+      // increment attempt
+      attempts++;
+      updateAttemptsUI();
+      
+      const secret = secretNumber;
+      
+      if (guess === secret) {
+        // CORRECT GUESS!
+        gameOver = true;
+        hintMessageDiv.innerHTML = `🎉🎉 PERFECT! Number was ${secret}. You won in ${attempts} attempt${attempts !== 1 ? 's' : ''}! 🎉🎉`;
+        statusMessageDiv.innerHTML = `🏆✨ VICTORY! ✨🏆 You guessed the secret number ${secret}. Press RESET to play more.`;
+        guessBtn.disabled = true;
+        guessField.disabled = true;
+        return;
+      }
+      
+      // Not correct: generate hint & update UI
+      const hint = generateRichHint(guess, secret, minRange, maxRange);
+      hintMessageDiv.innerHTML = hint;
+      
+      // additional status: show remaining range narrowing (smart)
+      let rangeFeedback = "";
+      if (guess > secret) {
+        rangeFeedback = `💡 Narrowed hint: secret is between ${minRange} and ${guess-1} (since ${guess} was too high)`;
+      } else if (guess < secret) {
+        rangeFeedback = `💡 Narrowed hint: secret is between ${guess+1} and ${maxRange} (since ${guess} was too low)`;
+      }
+      statusMessageDiv.innerHTML = `🔍 ${rangeFeedback} | Attempts: ${attempts}`;
+      
+      // optional: if attempts exceed some threshold, give extra tip (nice to have)
+      if (attempts >= 12 && !gameOver) {
+        // just playful extra
+        const extraAdvice = (guess > secret) ? "⬇️ Try lower half!" : "⬆️ Try upper half!";
+        statusMessageDiv.innerHTML = `🤔 ${rangeFeedback} ${extraAdvice} | attempts: ${attempts}`;
+      }
+      
+      // clear input field and refocus for next guess
+      guessField.value = "";
+      guessField.focus();
+    }
+    
+    // event binding & initial load
+    function init() {
+      // set initial range UI
+      minRange = 1;
+      maxRange = 100;
+      minInput.value = 1;
+      maxInput.value = 100;
+      generateSecret();       // secret between 1-100
+      attempts = 0;
+      gameOver = false;
+      updateAttemptsUI();
+      guessField.disabled = false;
+      guessBtn.disabled = false;
+      statusMessageDiv.innerHTML = `✅ Game active — range ${minRange} – ${maxRange}`;
+      hintMessageDiv.innerHTML = `🎲 Guess a number between 1 and 100. I'll give hints!`;
+      guessField.value = '';
+      
+      // ---- add event listeners ----
+      guessBtn.addEventListener('click', handleGuess);
+      resetGameBtn.addEventListener('click', () => {
+        resetGame(true);
+        guessBtn.disabled = false;
+        guessField.disabled = false;
+        gameOver = false;
+        statusMessageDiv.innerHTML = `🔄 Game reset! Same range (${minRange}–${maxRange}), new secret number.`;
+        hintMessageDiv.innerHTML = `✨ Fresh secret generated! Good luck ✨`;
+        guessField.focus();
+      });
+      
+      applyRangeBtn.addEventListener('click', () => {
+        // apply min/max inputs and reset everything
+        let newMin = parseInt(minInput.value, 10);
+        let newMax = parseInt(maxInput.value, 10);
+        if (isNaN(newMin)) newMin = 1;
+        if (isNaN(newMax)) newMax = 100;
+        if (newMin > newMax) {
+          // swap for sanity
+          [newMin, newMax] = [newMax, newMin];
+          minInput.value = newMin;
+          maxInput.value = newMax;
+        }
+        // safety: limit range spread huge but avoid freeze (50k is fine, but we set reasonable up to 500k)
+        if (newMax - newMin > 500000) {
+          statusMessageDiv.innerHTML = "⚠️ Range too large (max diff 500k). Auto-adjusting to diff=500k";
+          newMax = newMin + 500000;
+          maxInput.value = newMax;
+        }
+        minRange = newMin;
+        maxRange = newMax;
+        resetGame(true);
+        // override resetGame UI messages to reflect new custom range
+        statusMessageDiv.innerHTML = `🎲 New range applied: ${minRange} – ${maxRange}. Secret number regenerated!`;
+        hintMessageDiv.innerHTML = `🔢 Start guessing between ${minRange} and ${maxRange}. Hints guide you!`;
+        guessField.disabled = false;
+        guessBtn.disabled = false;
+        gameOver = false;
+        guessField.value = '';
+        guessField.focus();
+      });
+      
+      // pressing Enter in guess field triggers guess
+      guessField.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          if (!gameOver) {
+            handleGuess();
+          } else {
+            statusMessageDiv.innerHTML = "Game over. Press reset to continue guessing.";
+          }
+        }
+      });
+      
+      // extra: when range input changes manually, we DO NOT auto reset until apply button clicked. That is intended design.
+      // Also focus
+      guessField.focus();
+    }
+    
+    // start everything
+    init();
+  })();
+</script>
+</body>
+</html>

@@ -1,0 +1,986 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+        <link rel="icon" type="image/png" href="favicon.png">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Candy Crush - 100 Levels with Progress</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Arial', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            user-select: none;
+            flex-direction: column;
+            gap: 20px;
+            padding: 20px;
+        }
+
+        .main-menu {
+            text-align: center;
+            color: white;
+        }
+
+        .main-menu h1 {
+            font-size: 48px;
+            margin-bottom: 30px;
+            text-shadow: 3px 3px 6px rgba(0,0,0,0.3);
+        }
+
+        .game-container {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+            display: none;
+        }
+
+        .level-select {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 30px;
+            backdrop-filter: blur(10px);
+            display: none;
+            max-width: 500px;
+            width: 100%;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .level-select h2 {
+            color: white;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 32px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        /* Scrollbar styling */
+        .level-select::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .level-select::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+
+        .level-select::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 10px;
+        }
+
+        .level-select::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.5);
+        }
+
+        /* Level rows - 3 levels per row */
+        .level-row {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 25px;
+            position: relative;
+        }
+
+        /* Path/road connecting levels */
+        .level-row::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 10%;
+            right: 10%;
+            height: 4px;
+            background: linear-gradient(90deg, 
+                rgba(255,255,255,0.2) 0%, 
+                rgba(255,255,255,0.4) 50%, 
+                rgba(255,255,255,0.2) 100%);
+            z-index: 0;
+            border-radius: 2px;
+        }
+
+        .level-button {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 1;
+            backdrop-filter: blur(5px);
+            font-weight: bold;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .level-button .level-number {
+            font-size: 28px;
+            font-weight: bold;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.3);
+        }
+
+        .level-button:hover:not(.locked) {
+            transform: scale(1.1);
+            border-color: #FFD700;
+            box-shadow: 0 8px 25px rgba(255, 215, 0, 0.4);
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .level-button.locked {
+            background: rgba(0, 0, 0, 0.6);
+            color: #888;
+            cursor: not-allowed;
+            border-color: rgba(0, 0, 0, 0.5);
+            box-shadow: none;
+        }
+
+        .level-button.locked .level-number {
+            color: #666;
+        }
+
+        .level-button.completed {
+            background: linear-gradient(135deg, rgba(76, 175, 80, 0.4), rgba(139, 195, 74, 0.4));
+            border-color: #4CAF50;
+            box-shadow: 0 5px 20px rgba(76, 175, 80, 0.3);
+        }
+
+        .level-button.completed .level-number {
+            color: #fff;
+        }
+
+        .level-button.current {
+            background: linear-gradient(135deg, rgba(255, 193, 7, 0.4), rgba(255, 152, 0, 0.4));
+            border-color: #FFC107;
+            animation: pulse 2s infinite;
+            box-shadow: 0 5px 25px rgba(255, 193, 7, 0.5);
+        }
+
+        .level-button.current .level-number {
+            color: #fff;
+            font-size: 32px;
+        }
+
+        @keyframes pulse {
+            0%, 100% { 
+                transform: scale(1); 
+                box-shadow: 0 5px 25px rgba(255, 193, 7, 0.5);
+            }
+            50% { 
+                transform: scale(1.08); 
+                box-shadow: 0 8px 35px rgba(255, 193, 7, 0.8);
+            }
+        }
+
+        .stars {
+            font-size: 16px;
+            margin-top: 5px;
+            letter-spacing: 2px;
+        }
+
+        .lock-icon {
+            font-size: 32px;
+            margin-bottom: 5px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            color: white;
+            padding: 0 10px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .level-info {
+            text-align: center;
+        }
+
+        .level-title {
+            font-size: 28px;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .moves-left {
+            font-size: 18px;
+            margin-top: 5px;
+        }
+
+        .score-info {
+            text-align: right;
+        }
+
+        .score {
+            font-size: 24px;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .target-info {
+            font-size: 16px;
+            margin-top: 5px;
+        }
+
+        canvas {
+            border-radius: 10px;
+            cursor: pointer;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        button {
+            padding: 12px 24px;
+            font-size: 16px;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: transform 0.2s, box-shadow 0.2s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: white;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+        }
+
+        .btn-menu {
+            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+        }
+
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .popup {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            animation: slideIn 0.5s ease-out;
+            max-width: 400px;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateY(-100px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .popup h2 {
+            font-size: 36px;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .popup .congrats-text {
+            font-size: 18px;
+            color: #666;
+            margin-bottom: 20px;
+        }
+
+        .popup .stars-display {
+            font-size: 48px;
+            margin: 20px 0;
+        }
+
+        .popup button {
+            margin: 10px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 10px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 5px;
+            margin-top: 10px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4CAF50, #8BC34A);
+            transition: width 0.3s;
+            border-radius: 5px;
+        }
+
+        .combo-text {
+            position: fixed;
+            pointer-events: none;
+            font-size: 24px;
+            font-weight: bold;
+            color: #FFD700;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            animation: floatUp 1s ease-out;
+            z-index: 999;
+        }
+
+        @keyframes floatUp {
+            from {
+                opacity: 1;
+                transform: translateY(0);
+            }
+            to {
+                opacity: 0;
+                transform: translateY(-100px);
+            }
+        }
+
+        /* Responsive design */
+        @media (max-width: 600px) {
+            .level-button {
+                width: 80px;
+                height: 80px;
+            }
+            
+            .level-button .level-number {
+                font-size: 22px;
+            }
+            
+            .level-row {
+                gap: 10px;
+            }
+            
+            .level-select {
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="main-menu" id="mainMenu">
+        <h1>🍬 Candy Crush Saga</h1>
+        <button class="btn-primary" onclick="showLevelSelect()" style="font-size: 20px; padding: 15px 40px;">
+            🎮 Play Game
+        </button>
+    </div>
+
+    <div class="level-select" id="levelSelect">
+        <h2>🗺️ Select Level</h2>
+        <div id="levelGrid"></div>
+        <div style="text-align: center; margin-top: 30px;">
+            <button class="btn-menu" onclick="showMainMenu()">🏠 Back to Menu</button>
+        </div>
+    </div>
+
+    <div class="game-container" id="gameContainer">
+        <div class="header">
+            <div class="level-info">
+                <div class="level-title">Level <span id="level">1</span></div>
+                <div class="moves-left">Moves: <span id="moves">20</span></div>
+            </div>
+            <div class="score-info">
+                <div class="score">Score: <span id="score">0</span></div>
+                <div class="target-info">Target: <span id="target">1000</span></div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+                </div>
+            </div>
+        </div>
+        <canvas id="gameCanvas"></canvas>
+        <div class="buttons">
+            <button class="btn-secondary" onclick="restartLevel()">🔄 Restart</button>
+            <button class="btn-menu" onclick="showLevelSelect()">📋 Levels</button>
+        </div>
+    </div>
+
+    <div class="overlay" id="gameOverOverlay">
+        <div class="popup">
+            <h2>😔 Game Over!</h2>
+            <p class="congrats-text">You ran out of moves! Don't give up!</p>
+            <p style="font-size: 20px; color: #333;">Score: <span id="gameOverScore">0</span></p>
+            <button class="btn-primary" onclick="restartLevel()">🔄 Try Again</button>
+            <button class="btn-menu" onclick="showLevelSelect()">📋 Level Select</button>
+        </div>
+    </div>
+
+    <div class="overlay" id="levelCompleteOverlay">
+        <div class="popup">
+            <h2>🎉 Level Complete!</h2>
+            <div class="stars-display" id="starsDisplay">⭐⭐⭐</div>
+            <p class="congrats-text" id="congratsMessage">Amazing job! You're a candy crushing master!</p>
+            <p style="font-size: 20px; color: #333;">Score: <span id="finalScore">0</span></p>
+            <button class="btn-success" id="nextLevelBtn" onclick="nextLevel()">▶️ Next Level</button>
+            <button class="btn-secondary" onclick="restartLevel()">🔄 Replay</button>
+            <button class="btn-menu" onclick="showLevelSelect()">📋 Level Select</button>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const GRID_SIZE = 8;
+        const CELL_SIZE = 60;
+        const COLORS = ['#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEAA7', '#DDA0DD'];
+        const CANDY_TYPES = ['🍎', '🍊', '🍋', '🍇', '🍓', '🍬'];
+
+        canvas.width = GRID_SIZE * CELL_SIZE;
+        canvas.height = GRID_SIZE * CELL_SIZE;
+
+        let grid = [];
+        let selectedCandy = null;
+        let score = 0;
+        let currentLevel = 1;
+        let movesLeft = 20;
+        let targetScore = 1000;
+        let isAnimating = false;
+        let comboCount = 0;
+
+        // Game progress storage
+        let gameProgress = JSON.parse(localStorage.getItem('candyCrushProgress')) || {
+            unlockedLevel: 1,
+            levelStars: {}
+        };
+
+        // Level configurations
+        const levels = [];
+        for (let i = 1; i <= 100; i++) {
+            levels.push({
+                level: i,
+                moves: 15 + Math.floor(i * 1.5),
+                target: 1000 + (i * 500),
+                specialFeatures: i > 10 ? ['bomb', 'rainbow'][Math.floor(Math.random() * 2)] : null
+            });
+        }
+
+        class Candy {
+            constructor(color) {
+                this.color = color;
+            }
+        }
+
+        function initializeGrid() {
+            grid = [];
+            for (let row = 0; row < GRID_SIZE; row++) {
+                grid[row] = [];
+                for (let col = 0; col < GRID_SIZE; col++) {
+                    let color;
+                    do {
+                        color = Math.floor(Math.random() * COLORS.length);
+                    } while (wouldMatch(row, col, color));
+                    grid[row][col] = new Candy(color);
+                }
+            }
+        }
+
+        function wouldMatch(row, col, color) {
+            if (col >= 2 && grid[row][col - 1] && grid[row][col - 2]) {
+                if (grid[row][col - 1].color === color && 
+                    grid[row][col - 2].color === color) {
+                    return true;
+                }
+            }
+            if (row >= 2 && grid[row - 1] && grid[row - 2]) {
+                if (grid[row - 1][col] && grid[row - 2][col]) {
+                    if (grid[row - 1][col].color === color && 
+                        grid[row - 2][col].color === color) {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+
+        function drawGrid() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.2)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            for (let row = 0; row < GRID_SIZE; row++) {
+                for (let col = 0; col < GRID_SIZE; col++) {
+                    const x = col * CELL_SIZE;
+                    const y = row * CELL_SIZE;
+                    
+                    ctx.fillStyle = 'rgba(255, 255, 255, 0.1)';
+                    ctx.fillRect(x + 2, y + 2, CELL_SIZE - 4, CELL_SIZE - 4);
+                    
+                    if (grid[row][col]) {
+                        const centerX = x + CELL_SIZE / 2;
+                        const centerY = y + CELL_SIZE / 2;
+                        
+                        ctx.beginPath();
+                        ctx.arc(centerX, centerY, CELL_SIZE / 2 - 5, 0, Math.PI * 2);
+                        ctx.fillStyle = COLORS[grid[row][col].color];
+                        ctx.fill();
+                        
+                        const gradient = ctx.createRadialGradient(
+                            centerX - 5, centerY - 5, 5,
+                            centerX, centerY, CELL_SIZE / 2 - 5
+                        );
+                        gradient.addColorStop(0, 'rgba(255, 255, 255, 0.3)');
+                        gradient.addColorStop(1, 'rgba(255, 255, 255, 0)');
+                        ctx.beginPath();
+                        ctx.arc(centerX, centerY, CELL_SIZE / 2 - 5, 0, Math.PI * 2);
+                        ctx.fillStyle = gradient;
+                        ctx.fill();
+                        
+                        ctx.font = '30px Arial';
+                        ctx.textAlign = 'center';
+                        ctx.textBaseline = 'middle';
+                        ctx.fillText(CANDY_TYPES[grid[row][col].color], centerX, centerY);
+                    }
+
+                    if (selectedCandy && selectedCandy.row === row && selectedCandy.col === col) {
+                        ctx.strokeStyle = '#FFD700';
+                        ctx.lineWidth = 3;
+                        ctx.strokeRect(x + 2, y + 2, CELL_SIZE - 4, CELL_SIZE - 4);
+                    }
+                }
+            }
+        }
+
+        function getCandyPosition(event) {
+            const rect = canvas.getBoundingClientRect();
+            const x = event.clientX - rect.left;
+            const y = event.clientY - rect.top;
+            const col = Math.floor(x / CELL_SIZE);
+            const row = Math.floor(y / CELL_SIZE);
+            return { row, col };
+        }
+
+        function handleClick(event) {
+            if (isAnimating) return;
+            
+            const { row, col } = getCandyPosition(event);
+            
+            if (row < 0 || row >= GRID_SIZE || col < 0 || col >= GRID_SIZE) return;
+            
+            if (!selectedCandy) {
+                selectedCandy = { row, col };
+            } else {
+                if (isAdjacent(selectedCandy, { row, col })) {
+                    swapCandies(selectedCandy, { row, col });
+                } else {
+                    selectedCandy = { row, col };
+                }
+            }
+            
+            drawGrid();
+        }
+
+        function isAdjacent(pos1, pos2) {
+            const rowDiff = Math.abs(pos1.row - pos2.row);
+            const colDiff = Math.abs(pos1.col - pos2.col);
+            return (rowDiff === 1 && colDiff === 0) || (rowDiff === 0 && colDiff === 1);
+        }
+
+        async function swapCandies(pos1, pos2) {
+            isAnimating = true;
+            
+            const temp = grid[pos1.row][pos1.col];
+            grid[pos1.row][pos1.col] = grid[pos2.row][pos2.col];
+            grid[pos2.row][pos2.col] = temp;
+            
+            drawGrid();
+            await sleep(300);
+            
+            const matches = findMatches();
+            
+            if (matches.length > 0) {
+                movesLeft--;
+                comboCount = 0;
+                await processMatches(matches);
+                updateDisplay();
+                
+                if (score >= targetScore) {
+                    levelComplete();
+                } else if (movesLeft <= 0) {
+                    gameOver();
+                }
+            } else {
+                const temp = grid[pos1.row][pos1.col];
+                grid[pos1.row][pos1.col] = grid[pos2.row][pos2.col];
+                grid[pos2.row][pos2.col] = temp;
+                drawGrid();
+            }
+            
+            selectedCandy = null;
+            isAnimating = false;
+        }
+
+        function findMatches() {
+            const matches = new Set();
+            
+            for (let row = 0; row < GRID_SIZE; row++) {
+                for (let col = 0; col < GRID_SIZE - 2; col++) {
+                    if (grid[row][col] && grid[row][col + 1] && grid[row][col + 2]) {
+                        if (grid[row][col].color === grid[row][col + 1].color &&
+                            grid[row][col].color === grid[row][col + 2].color) {
+                            matches.add(`${row},${col}`);
+                            matches.add(`${row},${col + 1}`);
+                            matches.add(`${row},${col + 2}`);
+                            
+                            if (col < GRID_SIZE - 3 && grid[row][col + 3] &&
+                                grid[row][col].color === grid[row][col + 3].color) {
+                                matches.add(`${row},${col + 3}`);
+                            }
+                        }
+                    }
+                }
+            }
+            
+            for (let col = 0; col < GRID_SIZE; col++) {
+                for (let row = 0; row < GRID_SIZE - 2; row++) {
+                    if (grid[row][col] && grid[row + 1][col] && grid[row + 2][col]) {
+                        if (grid[row][col].color === grid[row + 1][col].color &&
+                            grid[row][col].color === grid[row + 2][col].color) {
+                            matches.add(`${row},${col}`);
+                            matches.add(`${row + 1},${col}`);
+                            matches.add(`${row + 2},${col}`);
+                        }
+                    }
+                }
+            }
+            
+            return Array.from(matches).map(pos => {
+                const [row, col] = pos.split(',').map(Number);
+                return { row, col };
+            });
+        }
+
+        async function processMatches(matches) {
+            while (matches.length > 0) {
+                comboCount++;
+                const points = matches.length * 10 * comboCount;
+                score += points;
+                
+                if (comboCount > 1) {
+                    showComboText(comboCount, points);
+                }
+                
+                for (const match of matches) {
+                    grid[match.row][match.col] = null;
+                }
+                
+                drawGrid();
+                await sleep(200);
+                
+                await dropCandies();
+                fillEmptySpaces();
+                
+                drawGrid();
+                await sleep(200);
+                
+                matches = findMatches();
+            }
+            
+            updateDisplay();
+        }
+
+        function showComboText(combo, points) {
+            const comboText = document.createElement('div');
+            comboText.className = 'combo-text';
+            comboText.textContent = `${combo}x Combo! +${points}`;
+            comboText.style.left = '50%';
+            comboText.style.top = '50%';
+            document.body.appendChild(comboText);
+            
+            setTimeout(() => {
+                comboText.remove();
+            }, 1000);
+        }
+
+        async function dropCandies() {
+            let moved = true;
+            while (moved) {
+                moved = false;
+                for (let row = GRID_SIZE - 1; row > 0; row--) {
+                    for (let col = 0; col < GRID_SIZE; col++) {
+                        if (grid[row][col] === null && grid[row - 1][col] !== null) {
+                            grid[row][col] = grid[row - 1][col];
+                            grid[row - 1][col] = null;
+                            moved = true;
+                        }
+                    }
+                }
+                if (moved) {
+                    drawGrid();
+                    await sleep(100);
+                }
+            }
+        }
+
+        function fillEmptySpaces() {
+            for (let col = 0; col < GRID_SIZE; col++) {
+                let emptyCount = 0;
+                for (let row = 0; row < GRID_SIZE; row++) {
+                    if (grid[row][col] === null) {
+                        emptyCount++;
+                    }
+                }
+                
+                for (let i = 0; i < emptyCount; i++) {
+                    const color = Math.floor(Math.random() * COLORS.length);
+                    grid[i][col] = new Candy(color);
+                }
+            }
+        }
+
+        function sleep(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+
+        function updateDisplay() {
+            document.getElementById('level').textContent = currentLevel;
+            document.getElementById('moves').textContent = movesLeft;
+            document.getElementById('score').textContent = score;
+            document.getElementById('target').textContent = targetScore;
+            
+            const progress = Math.min((score / targetScore) * 100, 100);
+            document.getElementById('progressFill').style.width = progress + '%';
+        }
+
+        function calculateStars() {
+            const ratio = score / targetScore;
+            if (ratio >= 2) return 3;
+            if (ratio >= 1.5) return 2;
+            return 1;
+        }
+
+        function getStarsDisplay(stars) {
+            switch(stars) {
+                case 3: return '⭐⭐⭐';
+                case 2: return '⭐⭐';
+                case 1: return '⭐';
+                default: return '';
+            }
+        }
+
+        function getCongratsMessage(stars) {
+            switch(stars) {
+                case 3: return 'Perfect! You\'re a candy crushing legend! 🌟';
+                case 2: return 'Great job! Almost perfect! 👏';
+                case 1: return 'Good work! Can you do better? 💪';
+                default: return 'Level completed!';
+            }
+        }
+
+        function restartLevel() {
+            document.getElementById('gameOverOverlay').style.display = 'none';
+            document.getElementById('levelCompleteOverlay').style.display = 'none';
+            
+            const level = levels[currentLevel - 1];
+            movesLeft = level.moves;
+            targetScore = level.target;
+            score = 0;
+            selectedCandy = null;
+            isAnimating = false;
+            comboCount = 0;
+            
+            initializeGrid();
+            updateDisplay();
+            drawGrid();
+        }
+
+        function startLevel(levelNum) {
+            if (levelNum > gameProgress.unlockedLevel) {
+                alert('🔒 This level is locked! Complete the previous level first.');
+                return;
+            }
+            
+            currentLevel = levelNum;
+            document.getElementById('mainMenu').style.display = 'none';
+            document.getElementById('levelSelect').style.display = 'none';
+            document.getElementById('gameContainer').style.display = 'block';
+            
+            const level = levels[currentLevel - 1];
+            movesLeft = level.moves;
+            targetScore = level.target;
+            score = 0;
+            selectedCandy = null;
+            isAnimating = false;
+            comboCount = 0;
+            
+            initializeGrid();
+            updateDisplay();
+            drawGrid();
+        }
+
+        function nextLevel() {
+            document.getElementById('levelCompleteOverlay').style.display = 'none';
+            
+            if (currentLevel < 100) {
+                currentLevel++;
+                const level = levels[currentLevel - 1];
+                movesLeft = level.moves;
+                targetScore = level.target;
+                score = 0;
+                selectedCandy = null;
+                isAnimating = false;
+                comboCount = 0;
+                
+                initializeGrid();
+                updateDisplay();
+                drawGrid();
+            }
+        }
+
+        function gameOver() {
+            document.getElementById('gameOverScore').textContent = score;
+            document.getElementById('gameOverOverlay').style.display = 'flex';
+        }
+
+        function levelComplete() {
+            const stars = calculateStars();
+            const currentStars = gameProgress.levelStars[currentLevel] || 0;
+            
+            if (stars > currentStars) {
+                gameProgress.levelStars[currentLevel] = stars;
+            }
+            
+            if (currentLevel === gameProgress.unlockedLevel && currentLevel < 100) {
+                gameProgress.unlockedLevel = currentLevel + 1;
+            }
+            
+            localStorage.setItem('candyCrushProgress', JSON.stringify(gameProgress));
+            
+            document.getElementById('starsDisplay').textContent = getStarsDisplay(stars);
+            document.getElementById('congratsMessage').textContent = getCongratsMessage(stars);
+            document.getElementById('finalScore').textContent = score;
+            
+            const nextBtn = document.getElementById('nextLevelBtn');
+            if (currentLevel < 100) {
+                nextBtn.style.display = 'inline-block';
+            } else {
+                nextBtn.style.display = 'none';
+            }
+            
+            document.getElementById('levelCompleteOverlay').style.display = 'flex';
+            updateLevelSelect();
+        }
+
+        function showLevelSelect() {
+            document.getElementById('mainMenu').style.display = 'none';
+            document.getElementById('gameContainer').style.display = 'none';
+            document.getElementById('gameOverOverlay').style.display = 'none';
+            document.getElementById('levelCompleteOverlay').style.display = 'none';
+            document.getElementById('levelSelect').style.display = 'block';
+            updateLevelSelect();
+        }
+
+        function showMainMenu() {
+            document.getElementById('mainMenu').style.display = 'block';
+            document.getElementById('levelSelect').style.display = 'none';
+            document.getElementById('gameContainer').style.display = 'none';
+            document.getElementById('gameOverOverlay').style.display = 'none';
+            document.getElementById('levelCompleteOverlay').style.display = 'none';
+        }
+
+        function updateLevelSelect() {
+            const levelGrid = document.getElementById('levelGrid');
+            levelGrid.innerHTML = '';
+            
+            // Create rows with 3 levels each
+            for (let i = 1; i <= 100; i += 3) {
+                const row = document.createElement('div');
+                row.className = 'level-row';
+                
+                // Add up to 3 levels per row
+                for (let j = 0; j < 3; j++) {
+                    const levelNum = i + j;
+                    if (levelNum > 100) break;
+                    
+                    const button = document.createElement('div');
+                    button.className = 'level-button';
+                    
+                    // Check level status
+                    if (levelNum > gameProgress.unlockedLevel) {
+                        button.classList.add('locked');
+                        button.innerHTML = `
+                            <span class="lock-icon">🔒</span>
+                            <span class="level-number">${levelNum}</span>
+                        `;
+                    } else {
+                        const levelNumSpan = document.createElement('span');
+                        levelNumSpan.className = 'level-number';
+                        levelNumSpan.textContent = levelNum;
+                        button.appendChild(levelNumSpan);
+                        
+                        if (levelNum === gameProgress.unlockedLevel) {
+                            button.classList.add('current');
+                        }
+                        
+                        if (gameProgress.levelStars[levelNum]) {
+                            button.classList.add('completed');
+                            const starsDiv = document.createElement('div');
+                            starsDiv.className = 'stars';
+                            starsDiv.textContent = getStarsDisplay(gameProgress.levelStars[levelNum]);
+                            button.appendChild(starsDiv);
+                        }
+                    }
+                    
+                    button.onclick = () => startLevel(levelNum);
+                    row.appendChild(button);
+                }
+                
+                levelGrid.appendChild(row);
+            }
+        }
+
+        // Event listeners
+        canvas.addEventListener('click', handleClick);
+
+        // Initialize
+        updateLevelSelect();
+    </script>
+</body>
+</html>

@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="icon" type="image/png" href="favicon.png">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tic-Tac-Toe Pro</title>
+    <style>
+        :root {
+            --bg: #0f172a;
+            --card: #1e293b;
+            --text: #f8fafc;
+            --primary: #38bdf8;
+            --secondary: #fb7185;
+            --accent: #4ade80;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* --- Header Controls --- */
+        .header-controls {
+            position: absolute;
+            top: 20px;
+            display: flex;
+            gap: 10px;
+            z-index: 10;
+        }
+
+        button, .btn-link {
+            padding: 10px 20px;
+            font-size: 13px;
+            font-weight: 600;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-transform: uppercase;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-home { background: #334155; color: var(--text); }
+        .btn-mode { background: var(--card); color: var(--text); border: 1px solid #475569; }
+        .btn-reset { background: var(--primary); color: var(--bg); }
+        
+        button:hover, .btn-link:hover { 
+            transform: translateY(-2px); 
+            filter: brightness(1.1); 
+        }
+
+        .status {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            font-weight: 700;
+            color: var(--primary);
+            height: 2rem;
+        }
+
+        /* --- Game Board --- */
+        .board {
+            display: grid;
+            grid-template-columns: repeat(3, 100px);
+            grid-template-rows: repeat(3, 100px);
+            gap: 12px;
+        }
+
+        .cell {
+            width: 100px;
+            height: 100px;
+            background: var(--card);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            font-weight: 800;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .cell:hover { background: #2d3a4f; }
+        .cell.x { color: var(--primary); }
+        .cell.o { color: var(--secondary); }
+
+        /* --- Modals --- */
+        .overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.95);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+            backdrop-filter: blur(8px);
+        }
+
+        .modal {
+            background: var(--card);
+            padding: 40px;
+            border-radius: 24px;
+            text-align: center;
+            border: 1px solid #334155;
+            width: 85%;
+            max-width: 320px;
+        }
+
+        .modal h1 { margin: 0 0 10px 0; color: var(--primary); }
+        .modal p { color: #94a3b8; margin-bottom: 25px; }
+        .modal-buttons { display: flex; flex-direction: column; gap: 12px; }
+
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body>
+
+    <div id="startOverlay" class="overlay">
+        <div class="modal">
+            <h1>TIC TAC TOE</h1>
+            <p>Select Game Mode</p>
+            <div class="modal-buttons">
+                <button class="btn-reset" onclick="startGame('pvc')">Solo vs AI</button>
+                <button class="btn-reset" onclick="startGame('pvp')">Multiplayer</button>
+                <a href="index.html" class="btn-home btn-link">Exit to Home</a>
+            </div>
+        </div>
+    </div>
+
+    <div id="endOverlay" class="overlay hidden">
+        <div class="modal">
+            <h1 id="resultTitle">WINNER!</h1>
+            <p id="resultMessage">Great game.</p>
+            <div class="modal-buttons">
+                <button class="btn-reset" onclick="resetGame()">Play Again</button>
+                <button class="btn-mode" onclick="showStartMenu()">Change Mode</button>
+                <a href="index.html" class="btn-home btn-link">Home</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="header-controls">
+        <a href="index.html" class="btn-home btn-link" title="Go to Home">Home</a>
+        <button class="btn-mode" id="modeIndicator" onclick="showStartMenu()">Mode</button>
+        <button class="btn-reset" onclick="resetGame()">Reset</button>
+    </div>
+
+    <div class="status" id="statusText">Player X's Turn</div>
+
+    <div class="board" id="board">
+        <div class="cell" data-index="0"></div>
+        <div class="cell" data-index="1"></div>
+        <div class="cell" data-index="2"></div>
+        <div class="cell" data-index="3"></div>
+        <div class="cell" data-index="4"></div>
+        <div class="cell" data-index="5"></div>
+        <div class="cell" data-index="6"></div>
+        <div class="cell" data-index="7"></div>
+        <div class="cell" data-index="8"></div>
+    </div>
+
+    <script>
+        let board = ["", "", "", "", "", "", "", "", ""];
+        let currentPlayer = "X";
+        let gameActive = false;
+        let gameMode = 'pvc';
+        let isAiThinking = false;
+
+        const statusDisplay = document.getElementById('statusText');
+        const modeIndicator = document.getElementById('modeIndicator');
+        const startOverlay = document.getElementById('startOverlay');
+        const endOverlay = document.getElementById('endOverlay');
+        const resultTitle = document.getElementById('resultTitle');
+        const resultMessage = document.getElementById('resultMessage');
+        const cells = document.querySelectorAll('.cell');
+
+        function startGame(mode) {
+            gameMode = mode;
+            modeIndicator.innerText = mode === 'pvc' ? "vs AI" : "PVP";
+            startOverlay.classList.add('hidden');
+            resetGame();
+        }
+
+        function showStartMenu() {
+            startOverlay.classList.remove('hidden');
+            endOverlay.classList.add('hidden');
+            gameActive = false;
+        }
+
+        function handleCellClick(e) {
+            const index = e.target.getAttribute('data-index');
+            if (board[index] !== "" || !gameActive || isAiThinking) return;
+
+            executeMove(index);
+
+            if (gameActive && gameMode === 'pvc' && currentPlayer === 'O') {
+                isAiThinking = true;
+                setTimeout(() => {
+                    const aiMove = minimax(board, "O").index;
+                    if (aiMove !== undefined) executeMove(aiMove);
+                    isAiThinking = false;
+                }, 500);
+            }
+        }
+
+        function executeMove(index) {
+            board[index] = currentPlayer;
+            cells[index].innerText = currentPlayer;
+            cells[index].classList.add(currentPlayer.toLowerCase());
+
+            if (checkGameOver()) return;
+
+            currentPlayer = (currentPlayer === "X") ? "O" : "X";
+            statusDisplay.innerText = `Player ${currentPlayer}'s Turn`;
+            statusDisplay.style.color = currentPlayer === "X" ? "var(--primary)" : "var(--secondary)";
+        }
+
+        function checkGameOver() {
+            const wins = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+            let roundWon = wins.some(c => c.every(i => board[i] === currentPlayer));
+
+            if (roundWon) {
+                gameActive = false;
+                showEndPopup(currentPlayer === 'X' ? 'win' : 'lose');
+                return true;
+            }
+            if (!board.includes("")) {
+                gameActive = false;
+                showEndPopup('draw');
+                return true;
+            }
+            return false;
+        }
+
+        function showEndPopup(type) {
+            setTimeout(() => {
+                endOverlay.classList.remove('hidden');
+                if (type === 'draw') {
+                    resultTitle.innerText = "DRAW!";
+                    resultTitle.style.color = "#94a3b8";
+                    resultMessage.innerText = "A perfect tie.";
+                } else if (gameMode === 'pvp') {
+                    resultTitle.innerText = `VICTORY!`;
+                    resultMessage.innerText = `Player ${currentPlayer} won the match.`;
+                    resultTitle.style.color = "var(--accent)";
+                } else {
+                    if (type === 'win') {
+                        resultTitle.innerText = "YOU WON!";
+                        resultTitle.style.color = "var(--accent)";
+                        resultMessage.innerText = "You outplayed the AI.";
+                    } else {
+                        resultTitle.innerText = "YOU LOST!";
+                        resultTitle.style.color = "var(--secondary)";
+                        resultMessage.innerText = "The AI was too strong.";
+                    }
+                }
+            }, 300);
+        }
+
+        function resetGame() {
+            board = ["", "", "", "", "", "", "", "", ""];
+            currentPlayer = "X";
+            gameActive = true;
+            isAiThinking = false;
+            endOverlay.classList.add('hidden');
+            statusDisplay.innerText = "Player X's Turn";
+            statusDisplay.style.color = "var(--primary)";
+            cells.forEach(cell => {
+                cell.innerText = "";
+                cell.classList.remove('x', 'o');
+            });
+        }
+
+        function minimax(newBoard, player) {
+            const availSpots = newBoard.map((v, i) => v === "" ? i : null).filter(v => v !== null);
+            if (checkWin(newBoard, "X")) return { score: -10 };
+            if (checkWin(newBoard, "O")) return { score: 10 };
+            if (availSpots.length === 0) return { score: 0 };
+
+            const moves = [];
+            for (let i = 0; i < availSpots.length; i++) {
+                let move = { index: availSpots[i] };
+                newBoard[availSpots[i]] = player;
+                move.score = minimax(newBoard, player === "O" ? "X" : "O").score;
+                newBoard[availSpots[i]] = "";
+                moves.push(move);
+            }
+
+            let bestMove;
+            if (player === "O") {
+                let bestScore = -Infinity;
+                moves.forEach((m, i) => { if (m.score > bestScore) { bestScore = m.score; bestMove = i; } });
+            } else {
+                let bestScore = Infinity;
+                moves.forEach((m, i) => { if (m.score < bestScore) { bestScore = m.score; bestMove = i; } });
+            }
+            return moves[bestMove];
+        }
+
+        function checkWin(b, p) {
+            const wins = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+            return wins.some(c => c.every(i => b[i] === p));
+        }
+
+        cells.forEach(cell => cell.addEventListener('click', handleCellClick));
+    </script>
+</body>
+</html>

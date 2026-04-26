@@ -4,7 +4,7 @@
     <link rel="icon" type="image/png" href="favicon.png">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard</title>
+    <title>Game Dashboard</title>
     <style>
         * {
             margin: 0;
@@ -29,6 +29,7 @@
             justify-content: space-between;
             align-items: center;
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+            z-index: 10;
         }
 
         .logo-link img {
@@ -53,7 +54,7 @@
             color: #38bdf8;
         }
 
-        /* Main Content */
+        /* Main Content Container */
         .container {
             flex: 1;
             display: flex;
@@ -61,7 +62,14 @@
             align-items: center;
             gap: 2.5rem;
             padding: 2rem;
-            flex-wrap: wrap;
+            flex-wrap: wrap; /* Allows stacking on small screens */
+        }
+
+        /* Link Wrapper Styling */
+        .box-link {
+            text-decoration: none;
+            color: inherit;
+            display: block;
         }
 
         .box {
@@ -80,7 +88,7 @@
         }
 
         .box span {
-            font-size: 1.2rem;
+            font-size: 1.1rem;
             font-weight: 600;
             text-transform: uppercase;
             letter-spacing: 1.5px;
@@ -89,8 +97,8 @@
 
         /* Icon Styling */
         .box svg {
-            width: 60px;
-            height: 60px;
+            width: 70px;
+            height: 70px;
             fill: #64748b;
             transition: all 0.3s ease;
         }
@@ -100,22 +108,29 @@
             transform: translateY(-12px);
             background: rgba(56, 189, 248, 0.08);
             border-color: #38bdf8;
-            box-shadow: 0 10px 30px -10px rgba(56, 189, 248, 0.3);
+            box-shadow: 0 20px 40px -15px rgba(56, 189, 248, 0.3);
         }
 
         .box:hover svg {
             fill: #38bdf8;
-            filter: drop-shadow(0 0 8px rgba(56, 189, 248, 0.6));
+            filter: drop-shadow(0 0 12px rgba(56, 189, 248, 0.5));
         }
 
         .box:hover span {
             color: white;
         }
 
-        /* Responsive */
-        @media (max-width: 600px) {
-            .container { gap: 1.5rem; }
-            .box { width: 100%; height: 180px; }
+        /* Responsive adjustments */
+        @media (max-width: 650px) {
+            .container { 
+                gap: 1.5rem; 
+                align-content: center;
+            }
+            .box { 
+                width: 100%; 
+                max-width: 320px;
+                height: 180px; 
+            }
         }
     </style>
 </head>
@@ -126,28 +141,33 @@
             <img src="logo123.png" alt="Logo">
         </a>
         <ul class="nav-links">
-            <li><a href="index.html">Home</a></li>
-            <li><a href="index.html">About</a></li>
-            <li><a href="index.html">Contact</a></li>
+            <li><a href="games.html">Home</a></li>
+            <li><a href="About.html">About</a></li>
+            <li><a href="contact.html">Contact Me</a></li>
         </ul>
     </nav>
 
-    <div class="container">
-        <div class="box">
-            <svg viewBox="0 0 24 24">
-                <path d="M12 3L1 9L12 15L21 10.09V17H23V9M5 13.18V17.18L12 21L19 17.18V13.18L12 17L5 13.18Z"/>
-            </svg>
-            <span>Study</span>
-        </div>
-<a href="games.html">
-        <div class="box">
-            <svg viewBox="0 0 24 24">
-                <path d="M21,6H3A2,2 0 0,0 1,8V16A2,2 0 0,0 3,18H21A2,2 0 0,0 23,16V8A2,2 0 0,0 21,6M6,15H4V13H2V11H4V9H6V11H8V13H6V15M14.5,15A1.5,1.5 0 0,1 13,13.5A1.5,1.5 0 0,1 14.5,12A1.5,1.5 0 0,1 16,13.5A1.5,1.5 0 0,1 14.5,15M18.5,12A1.5,1.5 0 0,1 17,10.5A1.5,1.5 0 0,1 18.5,9A1.5,1.5 0 0,1 20,10.5A1.5,1.5 0 0,1 18.5,12Z"/>
-            </svg>
-            <span>Gaming</span>
-        </div>
-    </a>
-    </div>
+    <main class="container">
+        
+        <a href="multi.html" class="box-link">
+            <div class="box">
+                <svg viewBox="0 0 24 24">
+                    <path d="M16,13C15.71,13 15.38,13 15.03,13.05C16.19,13.89 17,15.13 17,16.5V19H23V16.5C23,14.17 18.33,13 16,13M8,13C5.67,13 1,14.17 1,16.5V19H15V16.5C15,14.17 10.33,13 8,13M8,11A3,3 0 0,0 11,8A3,3 0 0,0 8,5A3,3 0 0,0 5,8A3,3 0 0,0 8,11M16,11A3,3 0 0,0 19,8A3,3 0 0,0 16,5A3,3 0 0,0 13,8A3,3 0 0,0 16,11Z" />
+                </svg>
+                <span>Multiplayer</span>
+            </div>
+        </a>
+
+        <a href="singleplayer.html" class="box-link">
+            <div class="box">
+                <svg viewBox="0 0 24 24">
+                    <path d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M12,4A8,8 0 0,1 20,12C20,14.15 19.16,16.1 17.77,17.55C17.36,15.93 15.71,14.5 13,14.12V13.09C13.67,12.74 14.13,12.04 14.13,11.23V9.38C14.13,8.22 13.18,7.27 12,7.27C10.82,7.27 9.87,8.22 9.87,9.38V11.23C9.87,12.04 10.33,12.74 11,13.09V14.12C8.29,14.5 6.64,15.93 6.23,17.55C4.84,16.1 4,14.15 4,12A8,8 0 0,1 12,4Z" />
+                </svg>
+                <span>Play vs Computer</span>
+            </div>
+        </a>
+
+    </main>
 
 </body>
 </html>
