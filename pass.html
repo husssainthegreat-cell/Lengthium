@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enter Password</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #0d0e15;
+            color: #ffffff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .login-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 40px;
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+
+        h2 {
+            margin-bottom: 24px;
+            font-size: 24px;
+            letter-spacing: 1px;
+            color: #00ffcc;
+            text-shadow: 0 0 10px rgba(0, 255, 204, 0.2);
+        }
+
+        .input-group {
+            margin-bottom: 24px;
+        }
+
+        input[type="password"] {
+            width: 100%;
+            padding: 14px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            color: #fff;
+            font-size: 16px;
+            outline: none;
+            text-align: center;
+            letter-spacing: 4px;
+            transition: all 0.3s ease;
+        }
+
+        input[type="password"]:focus {
+            border-color: #00ffcc;
+            box-shadow: 0 0 8px rgba(0, 255, 204, 0.3);
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        button {
+            width: 100%;
+            padding: 14px;
+            background: #00ffcc;
+            border: none;
+            border-radius: 8px;
+            color: #0d0e15;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 255, 204, 0.2);
+        }
+
+        button:hover {
+            background: #00e6b8;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 255, 204, 0.4);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="login-card">
+        <h2>ACCESS REQUIRED</h2>
+        <form id="passwordForm">
+            <div class="input-group">
+                <input type="password" id="passwordInput" placeholder="••••" required autocomplete="off">
+            </div>
+            <button type="submit">SUBMIT</button>
+        </form>
+    </div>
+
+    <script>
+        document.getElementById('passwordForm').addEventListener('submit', function(e) {
+            e.preventDefault(); // Stop the form from traditional submission
+            
+            const password = document.getElementById('passwordInput').value;
+            
+            if (password === '5321') {
+                window.location.href = 'htmle.html';
+            } else {
+                window.location.href = 'wrong.html';
+            }
+        });
+    </script>
+
+</body>
+</html>

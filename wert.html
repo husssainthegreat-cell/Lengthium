@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Code Display Tool</title>
+    <style>
+        :root {
+            --primary-color: #007aff;
+            --bg-color: #f4f7f6;
+            --code-bg: #1e1e1e;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background-color: var(--bg-color);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            margin: 0;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 800px;
+        }
+
+        /* Image Box - Styled for ccc.png */
+        .image-box {
+            width: 100%;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            background-color: #f8f9fa;
+        }
+
+        .image-box img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        /* Code Display Box */
+        .code-window {
+            background: #333;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .code-header {
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #2d2d2d;
+            border-bottom: 1px solid #444;
+        }
+
+        .code-header span {
+            color: #999;
+            font-size: 12px;
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+
+        .copy-btn {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 6px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        /* xmp displays HTML exactly as it is typed */
+        xmp {
+            margin: 0;
+            padding: 20px;
+            background: var(--code-bg);
+            color: #d4d4d4;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 14px;
+            line-height: 1.5;
+            white-space: pre-wrap;
+            overflow-x: auto;
+            display: block;
+        }
+
+        /* Download Button Styling */
+        .footer-action {
+            margin-top: 30px;
+            text-align: center;
+        }
+
+        .download-link {
+            background: #000;
+            color: white;
+            text-decoration: none;
+            padding: 15px 45px;
+            border-radius: 8px;
+            font-weight: 600;
+            display: inline-block;
+            transition: all 0.2s ease;
+            border: 2px solid transparent;
+        }
+
+        .download-link:hover {
+            background: #333;
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- Top Image Box -->
+        <div class="image-box">
+            <img src="dashboards/img/ccc.png" alt="Control Panel Display">
+        </div>
+
+        <!-- Code Box -->
+        <div class="code-window">
+            <div class="code-header">
+                <span>RAW TEXT CODE</span>
+                <button class="copy-btn" onclick="copyText()">Copy Code</button>
+            </div>
+            
+            <!-- Paste your code inside these XMP tags -->
+            <xmp id="displayArea">
+<
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Pro Dashboard</title>
+<style>
+  body {
+    background-color: #f0f2f5;
+    margin: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 100vh;
+  }
+
+  /* Navigation Bar Styling */
+  nav {
+    width: 100%;
+    background-color: #333;
+    padding: 15px 0;
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+  }
+
+  nav a {
+    text-decoration: none;
+    color: white;
+    font-weight: bold;
+    text-transform: uppercase;
+    font-size: 14px;
+    transition: color 0.3s;
+  }
+
+  nav a:hover {
+    color: #007bff;
+  }
+
+  /* Dashboard Layout */
+  .container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .dashboard {
+    display: flex;
+    gap: 25px;
+  }
+
+  .box-link {
+    text-decoration: none;
+    color: #333;
+  }
+
+  .box {
+    width: 180px;
+    height: 180px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 4px solid #333;
+    border-radius: 20px;
+    font-size: 50px;
+    font-weight: bold;
+    background-color: #ffffff;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  }
+
+  .box:hover {
+    background-color: #007bff;
+    color: white;
+    transform: scale(1.1);
+    border-color: #0056b3;
+    box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+  }
+
+  h1 { margin-bottom: 40px; color: #333; }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html">Home</a>
+  <a href="about.html">About</a>
+  <a href="contact.html">Contact</a>
+</nav>
+
+<div class="container">
+  <h1>Control Panel</h1>
+  <div class="dashboard">
+    <a href="1.html" class="box-link">
+      <div class="box">1</div>
+    </a>
+
+    <a href="2.html" class="box-link">
+      <div class="box">2</div>
+    </a>
+  </div>
+</div>
+
+</body>
+</html>
+</html></xmp>
+        </div>
+
+        <!-- Download Button Redirecting to Google Drive -->
+        <div class="footer-action">
+            <a href="https://drive.google.com/file/d/1Wjc63NlrZga9sN9-ZAAY3wZ7iuKhSkMW/view?usp=drive_link" 
+               target="_blank" 
+               class="download-link">
+               DOWNLOAD FILES
+            </a>
+        </div>
+    </div>
+
+    <script>
+        function copyText() {
+            const codeText = document.getElementById('displayArea').innerText;
+            navigator.clipboard.writeText(codeText).then(() => {
+                const btn = document.querySelector('.copy-btn');
+                btn.innerText = 'Copied!';
+                setTimeout(() => { btn.innerText = 'Copy Code'; }, 2000);
+            });
+        }
+    </script>
+
+</body>
+</html>

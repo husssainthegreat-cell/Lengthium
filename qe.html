@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lenghium Dashboard</title>
+    <!-- Google Fonts & Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --glass: rgba(255, 255, 255, 0.1);
+            --accent: #00f2ff;
+            --text: #ffffff;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(-45deg, #0f0c29, #302b63, #24243e, #000000);
+            background-size: 400% 400%;
+            animation: gradient 15s ease infinite;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            color: var(--text);
+            overflow: hidden;
+        }
+
+        @keyframes gradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        header {
+            padding: 20px 50px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--glass);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            z-index: 10;
+        }
+
+        .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .home-btn {
+            background: var(--accent);
+            color: #000;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 12px;
+            text-decoration: none;
+            font-size: 1.5rem;
+            box-shadow: 0 0 15px var(--accent);
+        }
+
+        h1 {
+            font-weight: 600;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            background: linear-gradient(to right, #fff, var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        main {
+            flex-grow: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 30px;
+            padding: 20px;
+            z-index: 5;
+        }
+
+        .glass-card {
+            width: 260px;
+            height: 320px;
+            background: var(--glass);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 24px;
+            text-decoration: none;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            padding: 30px;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .glass-card:hover {
+            transform: translateY(-15px);
+            background: rgba(255, 255, 255, 0.15);
+            border-color: var(--accent);
+            box-shadow: 0 10px 30px rgba(0, 242, 255, 0.2);
+        }
+
+        /* Style for the custom dd.png icon */
+        .card-icon-img {
+            width: 60px;
+            height: 60px;
+            object-fit: contain;
+            margin-bottom: 20px;
+            /* Optional: subtle glow to match the theme */
+            filter: drop-shadow(0 0 8px rgba(0, 242, 255, 0.5));
+        }
+
+        /* Style for FontAwesome icons */
+        .glass-card i {
+            font-size: 3rem;
+            color: var(--accent);
+            margin-bottom: 20px;
+        }
+
+        .glass-card h2 {
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+        }
+
+        .glass-card p {
+            font-weight: 300;
+            opacity: 0.8;
+            line-height: 1.5;
+        }
+
+        .blob {
+            position: absolute;
+            width: 400px;
+            height: 400px;
+            background: var(--accent);
+            filter: blur(80px);
+            border-radius: 50%;
+            z-index: 1;
+            opacity: 0.15;
+            bottom: -100px;
+            right: -100px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="blob"></div>
+
+    <header>
+        <div class="logo-area">
+            <a href="#" class="home-btn"><i class="fa-solid fa-rocket"></i></a>
+            <h1>Lenghium</h1>
+        </div>
+        <div class="user-profile">
+            <span>Made by Hussain</span>
+        </div>
+    </header>
+
+    <main>
+        <!-- Card 1: 3D Modelling with dd.png -->
+        <a href="#" class="glass-card">
+            <img src="dd.png" alt="3D Modeling" class="card-icon-img">
+            <h2>3D modelling</h2>
+            <p>You will get ready made models free to download.</p>
+        </a>
+
+        <!-- Card 2: Web Developer -->
+        <a href="web.html" class="glass-card">
+            <img src="qrp.png" alt="3D Modeling" class="card-icon-img">
+
+            <h2>Web devolper</h2>
+            <p>Get ready made website templates.</p>
+        </a>
+
+        <!-- Card 3: Vault -->
+        <a href="#" class="glass-card">
+            <img src="loer.png" alt="3D Modeling" class="card-icon-img">
+
+            <h2>Ideas</h2>
+            <p>Get ideas what to make.</p>
+        </a>
+    </main>
+
+</body>
+</html>

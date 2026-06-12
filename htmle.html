@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            display: flex;
+            height: 100vh;
+            background-color: #f4f6f9;
+            color: #333;
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            width: 250px;
+            background-color: #1e293b;
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            padding: 20px 0;
+            box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+        }
+
+        .sidebar h2 {
+            text-align: center;
+            font-size: 1.5rem;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #334155;
+            letter-spacing: 1px;
+        }
+
+        .nav-btn {
+            background: none;
+            border: none;
+            color: #cbd5e1;
+            padding: 15px 25px;
+            text-align: left;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+
+        .nav-btn:hover {
+            background-color: #334155;
+            color: #fff;
+            padding-left: 30px;
+        }
+
+        .nav-btn.active {
+            background-color: #2563eb;
+            color: #fff;
+            font-weight: bold;
+        }
+
+        /* Main Content Area */
+        .main-content {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .top-bar {
+            background-color: #fff;
+            padding: 15px 30px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            display: flex;
+            align-items: center;
+        }
+
+        .top-bar h1 {
+            font-size: 1.3rem;
+            color: #0f172a;
+        }
+
+        /* Frame container to embed your HTML files */
+        .content-frame {
+            flex-grow: 1;
+            border: none;
+            width: 100%;
+            height: 100%;
+            background-color: #fff;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="sidebar">
+        <h2>DASHBOARD</h2>
+        <button class="nav-btn active" onclick="loadPage('html.html', 'Cleaner', this)">🧹 Cleaner</button>
+        <button class="nav-btn" onclick="loadPage('notepad.html', 'Notepad', this)">📝 Notepad</button>
+    </div>
+
+    <div class="main-content">
+        <div class="top-bar">
+            <h1 id="page-title">Cleaner</h1>
+        </div>
+        <iframe id="dashboard-iframe" class="content-frame" src="html.html"></iframe>
+    </div>
+
+    <script>
+        function loadPage(pageUrl, title, button) {
+            // Change the source of the iframe
+            document.getElementById('dashboard-iframe').src = pageUrl;
+            
+            // Update the top bar title
+            document.getElementById('page-title').innerText = title;
+            
+            // Update active button styling
+            const buttons = document.querySelectorAll('.nav-btn');
+            buttons.forEach(btn => btn.classList.remove('active'));
+            button.classList.add('active');
+        }
+    </script>
+
+</body>
+</html>
