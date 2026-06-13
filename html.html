@@ -160,26 +160,33 @@ function forceCleanText() {
     
     const cleanedLines = lines.filter(line => {
         const trimmed = line.trim();
+        const lowerTrimmed = trimmed.toLowerCase();
         
         // 1. Instantly skip empty lines
         if (trimmed === '') return false;
         
-        // 2. Drop obvious manual keyword headings
-        if (trimmed.toLowerCase().includes('category') || trimmed.includes(' - ')) return false;
+        // 2. Drop standard layout headings/categories
+        if (lowerTrimmed.includes('category') || trimmed.includes(' - ')) return false;
         
-        // 3. Simple Sentence Filter:
-        // If a line contains more than 3 standard plain spaces between words, 
-        // it's a structural description sentence (e.g. "Consistent block letter styles mixed with...")
-        // All of your fancy names have symbols, accents, or compressed spaces.
-        const normalSpaceCount = (trimmed.match(/ /g) || []).length;
-        const onlyNormalLetters = /^[a-zA-Z0-9\s.,:()&'!\-[\]]+$/.test(trimmed);
+        // 3. Dynamic Heading Cleaner:
+        // Catches "Font", "Styles", "Text" identifiers followed by bracketed previews like:
+        // "Square Box Font (🄲🄷🄾🄽🄺)" or "Negative Square Font (🅽🅴🅶🅰🆃🅸🆅🅴)"
+        if (lowerTrimmed.includes('font') || lowerTrimmed.includes('style')) {
+            if (trimmed.includes('(') && trimmed.includes(')')) {
+                return false;
+            }
+        }
         
-        if (onlyNormalLetters && normalSpaceCount > 2) {
-            return false; 
+        // 4. Word-count filter for descriptive sentences:
+        // Pure names usually don't have 3+ separate spaces unless it's a structural descriptive sentence.
+        // We look at standard alphabetic words.
+        const standardWords = trimmed.split(/\s+/).filter(w => /^[a-zA-Z]{2,}$/.test(w));
+        if (standardWords.length > 3) {
+            return false;
         }
 
-        // 4. Numerical Heading Filter:
-        // Captures titles like "51 to 100: Sign Borders..."
+        // 5. Numerical Heading Filter:
+        // Captures "51 to 100: Sign Borders..."
         if (/^\d+\s+to\s+\d+:/i.test(trimmed)) {
             return false;
         }
@@ -214,4 +221,4 @@ function copyToClipboard() {
 </script>
 
 </body>
-</html>s
+</html>
