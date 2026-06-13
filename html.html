@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dynamic Text Cleaner & Heading Remover</title>
+    <title>Universal Text Heading Remover</title>
     <style>
         * {
             box-sizing: border-box;
@@ -12,7 +12,7 @@
         }
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #1e1e2f 0%, #251c3d 100%);
+            background: linear-gradient(135deg, #121214 0%, #1a1a24 100%);
             color: #fff;
             min-height: 100vh;
             display: flex;
@@ -21,28 +21,29 @@
             padding: 20px;
         }
         .container {
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
             padding: 30px;
-            border-radius: 16px;
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
             width: 100%;
-            max-width: 850px;
+            max-width: 900px;
         }
         h2 {
             text-align: center;
             margin-bottom: 25px;
-            font-size: 2rem;
+            font-size: 2.2rem;
+            font-weight: 700;
             letter-spacing: 1px;
-            background: linear-gradient(45deg, #ff007f, #7928ca, #00dfd8);
+            background: linear-gradient(45deg, #00ffcc, #0099ff, #7928ca);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
         .grid-layout {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 20px;
+            gap: 24px;
         }
         @media (max-width: 768px) {
             .grid-layout {
@@ -55,39 +56,40 @@
         }
         .label {
             font-weight: 600;
-            margin-bottom: 10px;
+            margin-bottom: 12px;
             font-size: 14px;
-            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
-        .label.input-lbl { color: #00dfd8; }
-        .label.output-lbl { color: #ff007f; }
+        .label.input-lbl { color: #00ffcc; }
+        .label.output-lbl { color: #0099ff; }
         
         textarea {
             width: 100%;
-            height: 300px;
-            padding: 15px;
-            background: rgba(0, 0, 0, 0.3);
+            height: 350px;
+            padding: 18px;
+            background: rgba(0, 0, 0, 0.4);
             border: 2px solid rgba(255, 255, 255, 0.1);
-            border-radius: 10px;
+            border-radius: 12px;
             color: #fff;
             font-family: 'Courier New', Courier, monospace;
             font-size: 15px;
-            line-height: 1.5;
+            line-height: 1.6;
             resize: none;
-            transition: all 0.3s ease;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
         }
         textarea:focus {
             outline: none;
         }
-        #inputText:focus { border-color: #00dfd8; box-shadow: 0 0 10px rgba(0, 223, 216, 0.3); }
-        #outputText:focus { border-color: #ff007f; box-shadow: 0 0 10px rgba(255, 0, 127, 0.3); }
+        #inputText:focus { border-color: #00ffcc; box-shadow: 0 0 15px rgba(0, 255, 204, 0.25); }
+        #outputText:focus { border-color: #0099ff; box-shadow: 0 0 15px rgba(0, 153, 255, 0.25); }
 
         .action-area {
             grid-column: 1 / -1;
             display: flex;
             justify-content: center;
             gap: 20px;
-            margin-top: 15px;
+            margin-top: 10px;
         }
         @media (max-width: 480px) {
             .action-area {
@@ -95,53 +97,53 @@
             }
         }
         button {
-            padding: 14px 35px;
-            font-size: 16px;
-            font-weight: bold;
+            padding: 15px 40px;
+            font-size: 15px;
+            font-weight: 700;
             border: none;
             border-radius: 50px;
             cursor: pointer;
             transition: all 0.3s ease;
             text-transform: uppercase;
             letter-spacing: 1px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
         }
         .btn-clean {
-            background: linear-gradient(45deg, #00dfd8, #007bff);
-            color: #fff;
+            background: linear-gradient(45deg, #00ffcc, #00aaff);
+            color: #0b0b10;
         }
         .btn-clean:hover {
             transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(0, 223, 216, 0.4);
+            box-shadow: 0 6px 25px rgba(0, 255, 204, 0.4);
         }
         .btn-copy {
-            background: linear-gradient(45deg, #ff007f, #7928ca);
+            background: linear-gradient(45deg, #0055ff, #7928ca);
             color: #fff;
         }
         .btn-copy:hover {
             transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(255, 0, 127, 0.4);
+            box-shadow: 0 6px 25px rgba(0, 85, 255, 0.4);
         }
         .btn-copy.copied {
-            background: linear-gradient(45deg, #00ff87, #60efff);
-            color: #111;
+            background: linear-gradient(45deg, #10b981, #059669);
+            color: #fff;
         }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h2>✨ Text Styling Cleaner ✨</h2>
+    <h2>✨ Universal Name Cleaner ✨</h2>
     
     <div class="grid-layout">
         <div class="box">
             <span class="label input-lbl">📥 Paste Raw Text Here:</span>
-            <textarea id="inputText" placeholder="Paste your text with 'Category' headings here..."></textarea>
+            <textarea id="inputText" placeholder="Paste your text with any kind of headers here..."></textarea>
         </div>
         
         <div class="box">
             <span class="label output-lbl">📤 Cleaned Output (One per row):</span>
-            <textarea id="outputText" placeholder="Cleaned text will appear here..." readonly></textarea>
+            <textarea id="outputText" placeholder="Cleaned styles will show here..." readonly></textarea>
         </div>
         
         <div class="action-area">
@@ -159,20 +161,23 @@ function removeHeadings() {
     const cleanedLines = lines.filter(line => {
         const trimmedLine = line.trim();
         
-        // Exclude lines starting with "Category"
-        if (trimmedLine.toLowerCase().startsWith('category')) {
-            return false;
-        }
-        // Exclude empty lines
+        // 1. Skip completely empty lines
         if (trimmedLine === '') {
             return false;
         }
+        
+        // 2. Multi-rule Heading Check:
+        // Skips lines containing "Category" OR containing " - " (used in language headers)
+        if (trimmedLine.toLowerCase().includes('category') || trimmedLine.includes(' - ')) {
+            return false;
+        }
+        
         return true;
     });
     
     document.getElementById('outputText').value = cleanedLines.join('\n');
     
-    // Reset copy button visual state if new text is processed
+    // Reset copy button styling when a fresh list is generated
     const copyBtn = document.getElementById('copyBtn');
     copyBtn.className = "btn-copy";
     copyBtn.innerHTML = "📋 Copy Clean Text";
@@ -183,18 +188,16 @@ function copyToClipboard() {
     const copyBtn = document.getElementById('copyBtn');
     
     if (!outputText.value) {
-        alert("Nothing to copy yet! Please clean some text first.");
+        alert("Please paste your text and click 'Remove Headings' first!");
         return;
     }
     
-    // Select and copy text
     outputText.select();
-    outputText.setSelectionRange(0, 99999); // For mobile devices
+    outputText.setSelectionRange(0, 99999);
     navigator.clipboard.writeText(outputText.value);
     
-    // Change button appearance temporarily to give feedback
     copyBtn.className = "btn-copy copied";
-    copyBtn.innerHTML = "✅ Copied Successfully!";
+    copyBtn.innerHTML = "✅ Copied to Clipboard!";
 }
 </script>
 
