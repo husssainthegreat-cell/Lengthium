@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Universal Text Heading Remover</title>
+    <title>Ultimate Unbreakable Name Streamliner</title>
     <style>
         * {
             box-sizing: border-box;
@@ -12,7 +12,7 @@
         }
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #121214 0%, #1a1a24 100%);
+            background: linear-gradient(135deg, #09090e 0%, #130a24 100%);
             color: #fff;
             min-height: 100vh;
             display: flex;
@@ -22,28 +22,28 @@
         }
         .container {
             background: rgba(255, 255, 255, 0.03);
-            backdrop-filter: blur(12px);
+            backdrop-filter: blur(20px);
             border: 1px solid rgba(255, 255, 255, 0.08);
-            padding: 30px;
-            border-radius: 20px;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+            padding: 35px;
+            border-radius: 24px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.7);
             width: 100%;
-            max-width: 900px;
+            max-width: 1000px;
         }
         h2 {
             text-align: center;
             margin-bottom: 25px;
-            font-size: 2.2rem;
-            font-weight: 700;
-            letter-spacing: 1px;
-            background: linear-gradient(45deg, #00ffcc, #0099ff, #7928ca);
+            font-size: 2.5rem;
+            font-weight: 800;
+            letter-spacing: 1.5px;
+            background: linear-gradient(45deg, #ff007f, #7928ca, #00dfd8);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
         .grid-layout {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 24px;
+            gap: 25px;
         }
         @media (max-width: 768px) {
             .grid-layout {
@@ -55,34 +55,34 @@
             flex-direction: column;
         }
         .label {
-            font-weight: 600;
+            font-weight: 700;
             margin-bottom: 12px;
-            font-size: 14px;
+            font-size: 13px;
             text-transform: uppercase;
-            letter-spacing: 1px;
+            letter-spacing: 1.5px;
         }
-        .label.input-lbl { color: #00ffcc; }
-        .label.output-lbl { color: #0099ff; }
+        .label.input-lbl { color: #00dfd8; }
+        .label.output-lbl { color: #ff007f; }
         
         textarea {
             width: 100%;
-            height: 350px;
-            padding: 18px;
-            background: rgba(0, 0, 0, 0.4);
-            border: 2px solid rgba(255, 255, 255, 0.1);
-            border-radius: 12px;
+            height: 420px;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.55);
+            border: 2px solid rgba(255, 255, 255, 0.08);
+            border-radius: 16px;
             color: #fff;
             font-family: 'Courier New', Courier, monospace;
             font-size: 15px;
             line-height: 1.6;
             resize: none;
-            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            transition: all 0.3s ease;
         }
         textarea:focus {
             outline: none;
         }
-        #inputText:focus { border-color: #00ffcc; box-shadow: 0 0 15px rgba(0, 255, 204, 0.25); }
-        #outputText:focus { border-color: #0099ff; box-shadow: 0 0 15px rgba(0, 153, 255, 0.25); }
+        #inputText:focus { border-color: #00dfd8; box-shadow: 0 0 20px rgba(0, 223, 216, 0.3); }
+        #outputText:focus { border-color: #ff007f; box-shadow: 0 0 20px rgba(255, 0, 127, 0.3); }
 
         .action-area {
             grid-column: 1 / -1;
@@ -97,35 +97,35 @@
             }
         }
         button {
-            padding: 15px 40px;
+            padding: 16px 45px;
             font-size: 15px;
-            font-weight: 700;
+            font-weight: 800;
             border: none;
             border-radius: 50px;
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             text-transform: uppercase;
-            letter-spacing: 1px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            letter-spacing: 1.5px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.4);
         }
         .btn-clean {
-            background: linear-gradient(45deg, #00ffcc, #00aaff);
-            color: #0b0b10;
+            background: linear-gradient(45deg, #00dfd8, #007bff);
+            color: white;
         }
         .btn-clean:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 25px rgba(0, 255, 204, 0.4);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0, 223, 216, 0.5);
         }
         .btn-copy {
-            background: linear-gradient(45deg, #0055ff, #7928ca);
-            color: #fff;
+            background: linear-gradient(45deg, #ff007f, #7928ca);
+            color: white;
         }
         .btn-copy:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 25px rgba(0, 85, 255, 0.4);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(255, 0, 127, 0.5);
         }
         .btn-copy.copied {
-            background: linear-gradient(45deg, #10b981, #059669);
+            background: linear-gradient(45deg, #00ff66, #009933);
             color: #fff;
         }
     </style>
@@ -133,51 +133,63 @@
 <body>
 
 <div class="container">
-    <h2>✨ Universal Name Cleaner ✨</h2>
+    <h2>⚡ Unbreakable Name Streamliner ⚡</h2>
     
     <div class="grid-layout">
         <div class="box">
-            <span class="label input-lbl">📥 Paste Raw Text Here:</span>
-            <textarea id="inputText" placeholder="Paste your text with any kind of headers here..."></textarea>
+            <span class="label input-lbl">📥 Paste Any Text (Headings/Descriptions):</span>
+            <textarea id="inputText" placeholder="Paste your raw layouts here..."></textarea>
         </div>
         
         <div class="box">
-            <span class="label output-lbl">📤 Cleaned Output (One per row):</span>
-            <textarea id="outputText" placeholder="Cleaned styles will show here..." readonly></textarea>
+            <span class="label output-lbl">📤 Pure Clean Styles Only (1 Per Row):</span>
+            <textarea id="outputText" placeholder="Clean names will render here..." readonly></textarea>
         </div>
         
         <div class="action-area">
-            <button class="btn-clean" onclick="removeHeadings()">⚡ Remove Headings</button>
+            <button class="btn-clean" onclick="forceCleanText()">⚡ Purify Text</button>
             <button class="btn-copy" id="copyBtn" onclick="copyToClipboard()">📋 Copy Clean Text</button>
         </div>
     </div>
 </div>
 
 <script>
-function removeHeadings() {
+function forceCleanText() {
     const input = document.getElementById('inputText').value;
     const lines = input.split('\n');
     
     const cleanedLines = lines.filter(line => {
-        const trimmedLine = line.trim();
+        const trimmed = line.trim();
         
-        // 1. Skip completely empty lines
-        if (trimmedLine === '') {
+        // 1. Instantly skip empty lines
+        if (trimmed === '') return false;
+        
+        // 2. Drop obvious manual keyword headings
+        if (trimmed.toLowerCase().includes('category') || trimmed.includes(' - ')) return false;
+        
+        // 3. Simple Sentence Filter:
+        // If a line contains more than 3 standard plain spaces between words, 
+        // it's a structural description sentence (e.g. "Consistent block letter styles mixed with...")
+        // All of your fancy names have symbols, accents, or compressed spaces.
+        const normalSpaceCount = (trimmed.match(/ /g) || []).length;
+        const onlyNormalLetters = /^[a-zA-Z0-9\s.,:()&'!\-[\]]+$/.test(trimmed);
+        
+        if (onlyNormalLetters && normalSpaceCount > 2) {
+            return false; 
+        }
+
+        // 4. Numerical Heading Filter:
+        // Captures titles like "51 to 100: Sign Borders..."
+        if (/^\d+\s+to\s+\d+:/i.test(trimmed)) {
             return false;
         }
         
-        // 2. Multi-rule Heading Check:
-        // Skips lines containing "Category" OR containing " - " (used in language headers)
-        if (trimmedLine.toLowerCase().includes('category') || trimmedLine.includes(' - ')) {
-            return false;
-        }
-        
-        return true;
+        return true; 
     });
     
     document.getElementById('outputText').value = cleanedLines.join('\n');
     
-    // Reset copy button styling when a fresh list is generated
+    // Reset Copy Button
     const copyBtn = document.getElementById('copyBtn');
     copyBtn.className = "btn-copy";
     copyBtn.innerHTML = "📋 Copy Clean Text";
@@ -188,7 +200,7 @@ function copyToClipboard() {
     const copyBtn = document.getElementById('copyBtn');
     
     if (!outputText.value) {
-        alert("Please paste your text and click 'Remove Headings' first!");
+        alert("Paste your raw lists and press Purify first!");
         return;
     }
     
@@ -202,4 +214,4 @@ function copyToClipboard() {
 </script>
 
 </body>
-</html>
+</html>s
